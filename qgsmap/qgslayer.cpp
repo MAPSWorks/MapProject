@@ -1,8 +1,20 @@
 #include "qgslayer.h"
 
-QGSLayer::QGSLayer(QGraphicsItem *parent) :
+QGSLayer::QGSLayer(QString layerName, int layerId, QGraphicsItem *parent) :
+
     QGraphicsItem(parent)
 {
+}
+
+QRectF QGSLayer::boundingRect() const
+{
+    return QRectF(10,10,10,10);
+}
+
+void QGSLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
+    //painter->drawRect(widget->rect());
 }
 
 QString QGSLayer::getName()

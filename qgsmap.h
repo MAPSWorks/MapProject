@@ -18,18 +18,27 @@ public:
     QGSLayer* getLayer(int layerId);
     QGSLayer* getLayer(QString layerName);
 
-    QGSLayer* addLayer(int layerId, QString layerName, QGraphicsScene *scene);
+    QGSLayer* addLayer(int layerId, QString layerName);
+
+    bool deleteLayer(QString layerName);
+    bool deleteLayer(int layerId);
+
+    QGraphicsScene* loadMap(QString mapName = "");
 
 signals:
 
 public slots:
 
 private:
+    bool mapLoaded;
+//    QGSMapInfo mapInfo;
+
+    QList<QGSLayer*> layers;
+
 
 private slots:
 
 protected:
-    QList<QGSLayer*> layers;
 
 };
 

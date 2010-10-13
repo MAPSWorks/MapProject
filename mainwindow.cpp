@@ -10,12 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QGraphicsScene *scene = new QGraphicsScene;
+    QGraphicsScene *scene = ui->gsMap->loadMap();
+
+    scene->clear();
 
     QPixmap pix("lol.png");
-
-    QGSLayer *lyr = ui->gsMap->addLayer(0, "Layer 1", scene);
-
+    QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
     QGraphicsLineItem *line = scene->addLine(0,0,30,35);
 
     QGraphicsPixmapItem *itm = scene->addPixmap(pix);
@@ -26,8 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
     line->setZValue(1);
     itm->setZValue(0);
 
-    ui->gsMap->setScene(scene);
-
 }
 
 MainWindow::~MainWindow()
@@ -37,9 +35,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QList<QGSLayer*> layers = ui->gsMap->getLayers();
 
-    QGSLayer *lyr = layers.at(0);
+    QGSLayer *lyr = ui->gsMap->getLayer(1);
 
     if(lyr->isVisible())
         lyr->setVisible(false);
