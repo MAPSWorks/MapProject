@@ -10,6 +10,7 @@ QGSMap::QGSMap(QWidget *parent) :
    setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 #endif
 
+
 }
 
 QList<QGSLayer*> QGSMap::getLayers()
