@@ -97,6 +97,9 @@ QGraphicsScene * QGSMap::loadMap(QString mapName)
     if(!mapName.isEmpty())
         ;
 
+    if(this->scene() != NULL)
+        this->scene()->clear();
+
     setScene(scene);
 
     return scene;

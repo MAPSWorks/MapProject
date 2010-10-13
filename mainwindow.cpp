@@ -12,19 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QGraphicsScene *scene = ui->gsMap->loadMap();
 
-    scene->clear();
-
     QPixmap pix("lol.png");
     QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
-    QGraphicsLineItem *line = scene->addLine(0,0,30,35);
 
     QGraphicsPixmapItem *itm = scene->addPixmap(pix);
 
-    line->setParentItem(lyr);
     itm->setParentItem(lyr);
 
-    line->setZValue(1);
-    itm->setZValue(0);
 
 }
 
