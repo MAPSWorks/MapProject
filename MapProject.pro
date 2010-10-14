@@ -13,10 +13,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     qgsmap.cpp \
-    qgsmap/qgslayer.cpp
+    qgsmap/qgslayer.cpp \
+    qgsmap/qgsfeatuefactory.cpp
 
 HEADERS  += mainwindow.h \
     qgsmap.h \
-    qgsmap/qgslayer.h
+    qgsmap/qgslayer.h \
+    qgsmap/qgsfeatuefactory.h
 
 FORMS    += mainwindow.ui

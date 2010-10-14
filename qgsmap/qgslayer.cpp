@@ -1,9 +1,15 @@
 #include "qgslayer.h"
+#include "../qgsmap.h"
 
-QGSLayer::QGSLayer(QString layerName, int layerId, QGraphicsItem *parent) :
+#include <QtDebug>
+
+QGSLayer::QGSLayer(int layerId, QString layerName, QGraphicsItem *parent) :
 
     QGraphicsItem(parent)
 {
+    setId(layerId);
+    setName(layerName);
+
 }
 
 QRectF QGSLayer::boundingRect() const
@@ -14,7 +20,6 @@ QRectF QGSLayer::boundingRect() const
 void QGSLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
-    //painter->drawRect(widget->rect());
 }
 
 QString QGSLayer::getName()
