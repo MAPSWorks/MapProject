@@ -57,4 +57,6 @@ void MainWindow::on_pushButton_2_clicked()
         item->setText(0, layers.at(i)->getName());
         ui->treeWidget->addTopLevelItem(item);
     }
+
+
 }
