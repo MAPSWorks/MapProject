@@ -29,13 +29,32 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
+    QTreeWidgetItem *item = ui->treeWidget->currentItem();
 
-    QGSLayer *lyr = ui->gsMap->getLayer(1);
+    if(item != NULL)
+    {
+
+    QGSLayer *lyr = ui->gsMap->getLayer(item->text(0));
 
     if(lyr->isVisible())
         lyr->setVisible(false);
     else
         lyr->setVisible(true);
 
+    }
 
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ui->treeWidget->clear();
+
+    QList<QGSLayer*> layers = ui->gsMap->getLayers();
+
+    for(int i=0;i<layers.count();i++)
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem;
+        item->setText(0, layers.at(i)->getName());
+        ui->treeWidget->addTopLevelItem(item);
+    }
 }
