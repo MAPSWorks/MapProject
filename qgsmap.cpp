@@ -5,12 +5,16 @@
 QGSMap::QGSMap(QWidget *parent) :
     QGraphicsView(parent)
 {
-
 #ifndef QT_NO_OPENGL
    setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-
 #endif
 
+   //built-in options
+
+   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+   setDragMode(QGraphicsView::ScrollHandDrag); //reimplementation inevitable
 }
 
 QList<QGSLayer*> QGSMap::getLayers()
@@ -56,10 +60,7 @@ QGSLayer* QGSMap::getLayer(QString layerName)
 
 QGSLayer* QGSMap::addLayer(int layerId, QString layerName)
 {
-    QGSLayer *lyr = new QGSLayer;
-
-    lyr->setId(layerId);
-    lyr->setName(layerName);
+    QGSLayer *lyr = new QGSLayer(layerId, layerName);
 
     scene()->addItem(lyr);
 
@@ -101,6 +102,8 @@ QGraphicsScene * QGSMap::loadMap(QString mapName)
         this->scene()->clear();
 
     setScene(scene);
+
+    featureFactory = new QGSFeatueFactory(scene);
 
     return scene;
 }

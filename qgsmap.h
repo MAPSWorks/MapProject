@@ -3,8 +3,10 @@
 
 #include <QGraphicsView>
 #include "qgsmap/qgslayer.h"
+#include "qgsmap/qgsfeatuefactory.h"
 
 class QGSLayer;
+class QGSFeatueFactory;
 
 class QGSMap : public QGraphicsView
 {
@@ -12,6 +14,9 @@ class QGSMap : public QGraphicsView
 
 public:
     explicit QGSMap(QWidget *parent = 0);
+
+    QGSFeatueFactory *featureFactory;
+    //
 
     QList<QGSLayer*> getLayers();
 

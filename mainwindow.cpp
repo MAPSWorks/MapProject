@@ -15,10 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QPixmap pix("lol.png");
     QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
 
-    QGraphicsPixmapItem *itm = scene->addPixmap(pix);
-
-    itm->setParentItem(lyr);
-
+    ui->gsMap->featureFactory->addPoint(lyr, 10, 10);
+    ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
+    ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
 
 }
 

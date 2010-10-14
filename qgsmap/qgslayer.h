@@ -12,7 +12,7 @@
 class QGSLayer : public QGraphicsItem
 {
 public:
-    QGSLayer(QString layerName = "", int layerId = -1, QGraphicsItem *parent = 0);
+    QGSLayer(int layerId = -1, QString layerName = "", QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
