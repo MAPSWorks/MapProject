@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include "qgsmap/qgslayer.h"
 #include "qgsmap/qgsfeatuefactory.h"
+#include "qgsmap/qgsmapinfo.h"
 
 class QGSLayer;
 class QGSFeatueFactory;
@@ -36,7 +37,7 @@ public slots:
 
 private:
     bool mapLoaded;
-//    QGSMapInfo mapInfo;
+    QGSMapInfo *mapInfo;
 
     QList<QGSLayer*> layers;
 

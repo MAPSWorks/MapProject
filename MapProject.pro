@@ -15,12 +15,14 @@ SOURCES += main.cpp\
     qgsmap.cpp \
     qgsmap/qgslayer.cpp \
     qgsmap/qgsfeatuefactory.cpp \
-    qgsmap/qgsthread.cpp
+    qgsmap/qgsthread.cpp \
+    qgsmap/qgsmapinfo.cpp
 
 HEADERS  += mainwindow.h \
     qgsmap.h \
     qgsmap/qgslayer.h \
     qgsmap/qgsfeatuefactory.h \
-    qgsmap/qgsthread.h
+    qgsmap/qgsthread.h \
+    qgsmap/qgsmapinfo.h
 
 FORMS    += mainwindow.ui

@@ -94,17 +94,23 @@ bool QGSMap::deleteLayer(QString layerName)
 QGraphicsScene * QGSMap::loadMap(QString mapName)
 {
     QGraphicsScene *scene = new QGraphicsScene;
+    mapInfo = new QGSMapInfo;
 
-    if(!mapName.isEmpty())
-        ;
+    if(mapInfo->setMapName(mapName))
+    {
 
-    if(this->scene() != NULL)
-        this->scene()->clear();
+        if(this->scene() != NULL)
+            this->scene()->clear();
 
-    setScene(scene);
+        setScene(scene);
 
-    featureFactory = new QGSFeatueFactory(scene);
+        featureFactory = new QGSFeatueFactory(scene);
 
-    return scene;
+        return scene;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 

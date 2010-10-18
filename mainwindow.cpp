@@ -12,12 +12,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QGraphicsScene *scene = ui->gsMap->loadMap();
 
-    QPixmap pix("lol.png");
-    QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
+    if(scene != NULL)
+    {
 
-    ui->gsMap->featureFactory->addPoint(lyr, 10, 10);
-    ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
-    ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
+        QPixmap pix("lol.png");
+        QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
+
+        ui->gsMap->featureFactory->addPoint(lyr, 10, 10);
+        ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
+        ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
+    }
+    else
+        qDebug() << "Map not found";
 
 }
 
