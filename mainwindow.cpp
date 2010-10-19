@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QGraphicsScene *scene = ui->gsMap->loadMap();
+    QGraphicsScene *scene = ui->gsMap->loadMap("test");
 
     if(scene != NULL)
     {
