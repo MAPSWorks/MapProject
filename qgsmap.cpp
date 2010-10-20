@@ -63,6 +63,7 @@ QGSLayer* QGSMap::addLayer(int layerId, QString layerName)
     QGSLayer *lyr = new QGSLayer(layerId, layerName);
 
     scene()->addItem(lyr);
+    lyr->setZValue(0);
 
     return lyr;
 }
@@ -94,7 +95,10 @@ bool QGSMap::deleteLayer(QString layerName)
 QGraphicsScene * QGSMap::loadMap(QString mapName)
 {
     QGraphicsScene *scene = new QGraphicsScene;
+    scene->setSceneRect(0, 0, 800, 600);
+
     mapInfo = new QGSMapInfo;
+    serverSettings = new QGSSettings;
 
     if(mapInfo->setMapName(mapName))
     {

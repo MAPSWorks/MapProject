@@ -4,7 +4,11 @@
 #
 #-------------------------------------------------
 
+<<<<<<< HEAD
 QT       += core gui opengl network
+=======
+QT       += core gui opengl network xml
+>>>>>>> acbcfe76a74a984cdf3bca8d3d5c589c0d4a6ffa
 
 TARGET = MapProject
 TEMPLATE = app
