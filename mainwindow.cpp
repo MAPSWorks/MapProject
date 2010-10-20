@@ -4,13 +4,14 @@
 #include <QGraphicsItem>
 #include <QtDebug>
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    QGraphicsScene *scene = ui->gsMap->loadMap();
+    QGraphicsScene *scene = ui->gsMap->loadMap("test");
 
     if(scene != NULL)
     {
@@ -21,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->gsMap->featureFactory->addPoint(lyr, 10, 10);
         ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
         ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
+
+
     }
     else
         qDebug() << "Map not found";
