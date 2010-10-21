@@ -13,7 +13,7 @@ QGSSettings::QGSSettings(QString serverHost, int serverPort, QObject *parent) :
 
 
     connectsAndSettings();
-    qDebug() << testConection();
+    testConection();
 
 
 }
@@ -58,7 +58,8 @@ bool QGSSettings::testConection()
 
     netManager->get(QNetworkRequest(QUrl(url)));
 
-    eventLoop.exec();
+    if(getTestReply() == Unknown)
+        eventLoop.exec();
 
     if(getTestReply() == Available)
     {
