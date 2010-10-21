@@ -9,13 +9,9 @@
 
 class QGSLayer;
 class QGSFeatueFactory;
-<<<<<<< HEAD
-class QGSMapInfo;
-class QGSSettings;
-=======
 class QGSSettings;
 class QGSMapInfo;
->>>>>>> acbcfe76a74a984cdf3bca8d3d5c589c0d4a6ffa
+
 
 class QGSMap : public QGraphicsView
 {
@@ -38,12 +34,8 @@ public:
     bool deleteLayer(QString layerName);
     bool deleteLayer(int layerId);
 
-<<<<<<< HEAD
     //map operations
 
-=======
-    //mapfunctions
->>>>>>> acbcfe76a74a984cdf3bca8d3d5c589c0d4a6ffa
     QGraphicsScene* loadMap(QString mapName = "");
 
     //server settings

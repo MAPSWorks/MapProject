@@ -1,13 +1,5 @@
 #include "qgssettings.h"
-
-<<<<<<< HEAD
-QGSSettings::QGSSettings(QObject *parent) :
-    QObject(parent)
-{
-=======
-#include <QXmlReader>
-#include <QTimer>
-#include <QDebug>
+#include <QtDebug>
 
 QGSSettings::QGSSettings(QString serverHost, int serverPort, QObject *parent) :
     QObject(parent)
@@ -66,6 +58,8 @@ bool QGSSettings::testConection()
 
     netManager->get(QNetworkRequest(QUrl(url)));
 
+    eventLoop.exec();
+
     if(getTestReply() == Available)
     {
         setTestReply(Unknown);
@@ -94,6 +88,8 @@ void QGSSettings::netReply(QNetworkReply *reply)
             setTestReply(Available);
         else
             setTestReply(NotAvailable);
+
+        eventLoop.exit();
     }
 }
 
@@ -114,5 +110,5 @@ void QGSSettings::connectsAndSettings()
     connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
     setTestReply(Unknown);
->>>>>>> acbcfe76a74a984cdf3bca8d3d5c589c0d4a6ffa
+
 }
