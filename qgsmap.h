@@ -53,6 +53,8 @@ private:
 
     QList<QGSLayer*> layers;
 
+    void initMap();
+
 
 private slots:
 
