@@ -9,24 +9,25 @@
 class QGSSettings : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(TestReply)
+    Q_ENUMS(ConnectionState)
 public:
-    enum TestReply{
+    enum ConnectionState{
         NotAvailable = 0,
         Available = 1,
         Unknown = 2
     };
 
 
-    explicit QGSSettings(QString serverHost = "localhost", int serverPort = 8080, QObject *parent = 0);
+    explicit QGSSettings(QString serverHost = "localhost", int serverPort = 18080, QObject *parent = 0);
 
     bool getServerInfo();
 
     bool setServerHost(QString serverHost = "localhost");
-    bool setServerPort(int serverPort = 8080);
+    bool setServerPort(int serverPort = 18080);
 
     QString getServerHost();
     int getServerPort();
+    ConnectionState getConnectionState();
 
 signals:
 
@@ -36,18 +37,22 @@ public slots:
 private:
     QString serverHost;
     int serverPort;
-    TestReply testReply;
+
     QEventLoop eventLoop;
     QNetworkAccessManager *netManager;
+    ConnectionState connectionState;
 
-    bool testConection();
+    void testConection();
+
     void connectsAndSettings();
-    void setTestReply(TestReply tr);
+
 
 private slots:
 
     void netReply(QNetworkReply* reply);
-    TestReply getTestReply();
+
+    void setConnectionState(ConnectionState connectionState);
+
 
 };
 

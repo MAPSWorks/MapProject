@@ -39,7 +39,7 @@ public:
     QGraphicsScene* loadMap(QString mapName = "");
 
     //server settings
-    bool setServerSettings(QString serverHost, int serverPort);
+    bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
 
 signals:

@@ -1,6 +1,7 @@
 #include "qgsmap.h"
 
 #include <QGLWidget>
+#include <QtDebug>
 
 QGSMap::QGSMap(QWidget *parent) :
     QGraphicsView(parent)
@@ -92,19 +93,11 @@ bool QGSMap::deleteLayer(QString layerName)
             return false;
 }
 
-QGraphicsScene * QGSMap::loadMap(QString mapName)
+QGraphicsScene* QGSMap::loadMap(QString mapName)
 {
-    QGraphicsScene *scene = new QGraphicsScene;
-    scene->setSceneRect(0, 0, 800, 600);
-
-    mapInfo = new QGSMapInfo;
-    serverSettings = new QGSSettings;
-
-    if(mapInfo->setMapName(mapName))
+    if(serverSettings != NULL)
     {
-
-        if(this->scene() != NULL)
-            this->scene()->clear();
+        QGraphicsScene *scene = new QGraphicsScene;
 
         setScene(scene);
 
@@ -114,7 +107,41 @@ QGraphicsScene * QGSMap::loadMap(QString mapName)
     }
     else
     {
+        qDebug() << "Server settings are not defined!";
         return NULL;
+    }
+
+}
+
+QGSSettings* QGSMap::getServerSettings()
+{
+    return serverSettings;
+}
+
+bool QGSMap::setServerSettings(QString serverHost, int serverPort)
+{
+    serverSettings = new QGSSettings(serverHost, serverPort);
+
+    if(serverSettings->getConnectionState() == QGSSettings::Available)
+        return true;
+    else
+    {
+        qDebug() << "Unable to connect";
+        return false;
     }
 }
 
+
+void QGSMap::initMap()
+{
+//    mapInfo = NULL;
+//    serverSettings = NULL;
+
+//    mapInfo = new QGSMapInfo;
+//    serverSettings = new QGSSettings(serverHost, serverPort);
+
+//    if(serverSettings->testReply == QGSSettings::Available)
+//        return true;
+//    else
+//        return false;
+}

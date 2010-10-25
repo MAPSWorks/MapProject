@@ -6,15 +6,13 @@ QGSSettings::QGSSettings(QString serverHost, int serverPort, QObject *parent) :
 {
     if(setServerHost(serverHost) && setServerPort(serverPort))
     {
-
+        connectsAndSettings();
+        testConection();
     }
     else
+    {
         qDebug() << "Unable to set server host|port";
-
-
-    connectsAndSettings();
-    testConection();
-
+    }
 
 }
 
@@ -48,7 +46,7 @@ int QGSSettings::getServerPort()
     return this->serverPort;
 }
 
-bool QGSSettings::testConection()
+void QGSSettings::testConection()
 {
     QString url = "http://";
     url.append(this->serverHost);
@@ -58,50 +56,38 @@ bool QGSSettings::testConection()
 
     netManager->get(QNetworkRequest(QUrl(url)));
 
-    if(getTestReply() == Unknown)
+    if(getConnectionState() == Unknown)
         eventLoop.exec();
-
-    if(getTestReply() == Available)
-    {
-        setTestReply(Unknown);
-        return true;
-    }
-    else
-    {
-        setTestReply(Unknown);
-        return false;
-    }
-
 
 }
 
 void QGSSettings::netReply(QNetworkReply *reply)
 {
-    QString url = "http://";
-    url.append(this->serverHost);
-    url.append(":");
-    url.append(QString::number(this->serverPort));
-    url.append("/test");
+    QString testUrl = "http://";
+    testUrl.append(this->serverHost);
+    testUrl.append(":");
+    testUrl.append(QString::number(this->serverPort));
+    testUrl.append("/test");
 
-    if(reply->url() == QUrl(url))
+    if(reply->url() == QUrl(testUrl))
     {
         if(reply->error() == 203)
-            setTestReply(Available);
+            setConnectionState(Available);
         else
-            setTestReply(NotAvailable);
+            setConnectionState(NotAvailable);
 
         eventLoop.exit();
     }
 }
 
-QGSSettings::TestReply QGSSettings::getTestReply()
+QGSSettings::ConnectionState QGSSettings::getConnectionState()
 {
-    return testReply;
+    return connectionState;
 }
 
-void QGSSettings::setTestReply(TestReply tr)
+void QGSSettings::setConnectionState(ConnectionState connectionState)
 {
-    testReply = tr;
+    this->connectionState = connectionState;
 }
 
 void QGSSettings::connectsAndSettings()
@@ -110,6 +96,6 @@ void QGSSettings::connectsAndSettings()
 
     connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
-    setTestReply(Unknown);
+    setConnectionState(Unknown);
 
 }
