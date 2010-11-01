@@ -10,6 +10,9 @@ QGSMap::QGSMap(QWidget *parent) :
    setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 #endif
 
+   //nulls and spells
+   serverSettings = NULL;
+
    //built-in options
 
    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -98,6 +101,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
     if(serverSettings != NULL)
     {
         QGraphicsScene *scene = new QGraphicsScene;
+        mapInfo = new QGSMapInfo;
 
         setScene(scene);
 
@@ -123,7 +127,9 @@ bool QGSMap::setServerSettings(QString serverHost, int serverPort)
     serverSettings = new QGSSettings(serverHost, serverPort);
 
     if(serverSettings->getConnectionState() == QGSSettings::Available)
+    {
         return true;
+    }
     else
     {
         qDebug() << "Unable to connect";

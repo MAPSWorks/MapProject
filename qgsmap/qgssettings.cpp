@@ -1,5 +1,7 @@
 #include "qgssettings.h"
 #include <QtDebug>
+#include <QStringList>
+
 
 QGSSettings::QGSSettings(QString serverHost, int serverPort, QObject *parent) :
     QObject(parent)
@@ -67,9 +69,9 @@ void QGSSettings::netReply(QNetworkReply *reply)
     testUrl.append(this->serverHost);
     testUrl.append(":");
     testUrl.append(QString::number(this->serverPort));
-    testUrl.append("/test");
 
-    if(reply->url() == QUrl(testUrl))
+
+    if(reply->url() == QUrl(testUrl + "/test"))
     {
         if(reply->error() == 203)
             setConnectionState(Available);
@@ -77,6 +79,27 @@ void QGSSettings::netReply(QNetworkReply *reply)
             setConnectionState(NotAvailable);
 
         eventLoop.exit();
+    }
+    else if(reply->url() == QUrl(testUrl + "/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true"))
+    {
+        if(reply->error() != 404)
+        {
+            QByteArray data;
+
+            data = reply->readAll();
+
+            xmlFile.setFileName("temp.xml");
+            xmlFile.open(QIODevice::WriteOnly);
+
+            xmlFile.write(data);
+
+            xmlFile.close();
+
+            eventLoop.exit();
+
+        }
+
+
     }
 }
 
@@ -97,5 +120,59 @@ void QGSSettings::connectsAndSettings()
     connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
     setConnectionState(Unknown);
+
+}
+
+QList<QString> QGSSettings::getMapList(int EPSG)
+{
+    mapList.clear();
+
+
+    QString capableUrl = "http://";
+    capableUrl.append(this->serverHost);
+    capableUrl.append(":");
+    capableUrl.append(QString::number(this->serverPort));
+    capableUrl.append("/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true");
+
+    netManager->get(QNetworkRequest(QUrl(capableUrl)));
+
+    eventLoop.exec();
+
+    xmlFile.open(QIODevice::ReadOnly);
+
+    xmlParser.setContent(&xmlFile);
+
+    QDomElement xmlRoot = xmlParser.documentElement();
+
+    QDomNode node;
+
+    node = xmlRoot.childNodes().at(1).childNodes().at(2).firstChild();
+
+    while(!node.isNull())
+    {
+        if(node.nodeName() == "TileSet")
+        {
+            QDomNode tileSet = node.childNodes().at(0);
+
+            if(tileSet.firstChild().nodeValue() == "EPSG:" + QString::number(EPSG))
+            {
+                QString value = node.childNodes().at(6).firstChild().nodeValue();
+
+                if(value.split(":").count() == 1)
+                    mapList.append(value);
+            }
+
+        }
+
+         node = node.nextSibling();
+    }
+
+
+
+
+    xmlFile.close();
+
+    return mapList;
+
 
 }

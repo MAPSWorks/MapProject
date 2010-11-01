@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->gsMap->setServerSettings("10.254.53.244");
+
     QGraphicsScene *scene = ui->gsMap->loadMap("test");
 
     if(scene != NULL)
@@ -23,10 +25,20 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
         ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
 
+        QList<QString> list = ui->gsMap->getServerSettings()->getMapList(4326);
+
+        for(int i=0;i<list.count();i++)
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem;
+            item->setText(0, list.at(i));
+            ui->treeWidget->addTopLevelItem(item);
+        }
+
+
 
     }
     else
-        qDebug() << "Map not found";
+        qDebug() << "Map cannot be loaded";
 
 }
 

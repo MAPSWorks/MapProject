@@ -5,6 +5,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include <qdom.h>
+#include <QFile>
+
 
 class QGSSettings : public QObject
 {
@@ -17,10 +20,13 @@ public:
         Unknown = 2
     };
 
-
     explicit QGSSettings(QString serverHost = "localhost", int serverPort = 18080, QObject *parent = 0);
 
-    bool getServerInfo();
+    //
+
+    ///
+
+    void getServerInfo();
 
     bool setServerHost(QString serverHost = "localhost");
     bool setServerPort(int serverPort = 18080);
@@ -28,6 +34,8 @@ public:
     QString getServerHost();
     int getServerPort();
     ConnectionState getConnectionState();
+
+    QList<QString> getMapList(int EPSG = 41001);
 
 signals:
 
@@ -37,6 +45,11 @@ public slots:
 private:
     QString serverHost;
     int serverPort;
+    QList<QString> mapList;
+
+    QDomDocument xmlParser;
+    QFile xmlFile;
+
 
     QEventLoop eventLoop;
     QNetworkAccessManager *netManager;
