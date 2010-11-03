@@ -123,7 +123,7 @@ void QGSSettings::connectsAndSettings()
 
 }
 
-QList<QString> QGSSettings::getMapList(int EPSG)
+QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType)
 {
     mapList.clear();
 
@@ -158,8 +158,12 @@ QList<QString> QGSSettings::getMapList(int EPSG)
             {
                 QString value = node.childNodes().at(6).firstChild().nodeValue();
 
-                if(value.split(":").count() == 1)
-                    mapList.append(value);
+                if(value.split(":").count() == 1 && node.childNodes().at(5).firstChild().nodeValue() == imageType)
+                {
+                    QGSMapInfo *mi = new QGSMapInfo;
+                    mi->setMapName(value);
+                    mapList.append(mi);
+                }
             }
 
         }

@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->gsMap->setServerSettings("10.254.53.244");
+    ui->gsMap->setServerSettings("localhost"); //"10.254.53.244"
 
     QGraphicsScene *scene = ui->gsMap->loadMap("test");
 
@@ -25,13 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
         ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
 
-        QList<QString> list = ui->gsMap->getServerSettings()->getMapList(4326);
+        QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(41001);
 
         for(int i=0;i<list.count();i++)
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem;
-            item->setText(0, list.at(i));
-            ui->treeWidget->addTopLevelItem(item);
+            QListWidgetItem *item = new QListWidgetItem;
+            item->setText(list.at(i)->getMapName());
+            ui->listWidget->addItem(item);
         }
 
 
@@ -47,36 +47,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_listWidget_itemSelectionChanged()
 {
-    QTreeWidgetItem *item = ui->treeWidget->currentItem();
+    QGSMapInfo *mi = (QGSMapInfo *)ui->listWidget->currentItem();
 
-    if(item != NULL)
-    {
-
-    QGSLayer *lyr = ui->gsMap->getLayer(item->text(0));
-
-    if(lyr->isVisible())
-        lyr->setVisible(false);
-    else
-        lyr->setVisible(true);
-
-    }
-
-}
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    ui->treeWidget->clear();
-
-    QList<QGSLayer*> layers = ui->gsMap->getLayers();
-
-    for(int i=0;i<layers.count();i++)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem;
-        item->setText(0, layers.at(i)->getName());
-        ui->treeWidget->addTopLevelItem(item);
-    }
-
-
+    ui->mapBox->setTitle(mi->getMapName());
 }

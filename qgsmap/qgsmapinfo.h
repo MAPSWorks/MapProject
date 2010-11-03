@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+
 class QGSMapInfo : public QObject
 {
     Q_OBJECT
@@ -18,6 +19,10 @@ public slots:
 
 private:
     QString mapName;
+    int mapSrs;
+
+
+
 
 };
 

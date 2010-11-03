@@ -8,6 +8,10 @@
 #include <qdom.h>
 #include <QFile>
 
+#include "qgsmapinfo.h"
+
+class QGSMapInfo;
+
 
 class QGSSettings : public QObject
 {
@@ -35,7 +39,7 @@ public:
     int getServerPort();
     ConnectionState getConnectionState();
 
-    QList<QString> getMapList(int EPSG = 41001);
+    QList<QGSMapInfo*> getMapList(int EPSG = 41001, QString imageType = "image/png");
 
 signals:
 
@@ -45,7 +49,7 @@ public slots:
 private:
     QString serverHost;
     int serverPort;
-    QList<QString> mapList;
+    QList<QGSMapInfo*> mapList;
 
     QDomDocument xmlParser;
     QFile xmlFile;
