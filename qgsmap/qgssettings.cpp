@@ -161,7 +161,13 @@ QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType)
                 if(value.split(":").count() == 1 && node.childNodes().at(5).firstChild().nodeValue() == imageType)
                 {
                     QGSMapInfo *mi = new QGSMapInfo;
+                    double xMin = node.childNodes().at(1).toElement().attribute("minx").toDouble();
+                    double yMin = node.childNodes().at(1).toElement().attribute("miny").toDouble();
+                    double xMax = node.childNodes().at(1).toElement().attribute("maxx").toDouble();
+                    double yMax = node.childNodes().at(1).toElement().attribute("maxy").toDouble();
+
                     mi->setMapName(value);
+
                     mapList.append(mi);
                 }
             }

@@ -132,6 +132,7 @@ bool QGSMap::setServerSettings(QString serverHost, int serverPort)
     }
     else
     {
+        serverSettings = NULL;
         qDebug() << "Unable to connect";
         return false;
     }

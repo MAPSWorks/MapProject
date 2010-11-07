@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+#include "qgsrect.h"
 
 class QGSMapInfo : public QObject
 {
@@ -13,6 +14,9 @@ public:
     bool setMapName(QString mapName);
     QString getMapName();
 
+    QGSRect boundingBox;
+
+
 signals:
 
 public slots:
@@ -20,6 +24,8 @@ public slots:
 private:
     QString mapName;
     int mapSrs;
+
+
 
 
 

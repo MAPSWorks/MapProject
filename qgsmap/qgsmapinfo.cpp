@@ -18,9 +18,6 @@ bool QGSMapInfo::setMapName(QString mapName)
         return true;
     else
         return false;
-
-
-
 }
 
 
