@@ -12,6 +12,7 @@ QGSMap::QGSMap(QWidget *parent) :
 
    //nulls and spells
    serverSettings = NULL;
+   netManager = new QNetworkAccessManager(this);
 
    //built-in options
 
@@ -19,6 +20,10 @@ QGSMap::QGSMap(QWidget *parent) :
    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
    setDragMode(QGraphicsView::ScrollHandDrag); //reimplementation inevitable
+
+   //netManager->blockSignals(true);
+   connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
+
 }
 
 QList<QGSLayer*> QGSMap::getLayers()
@@ -100,14 +105,40 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 {
     if(serverSettings != NULL)
     {
-        QGraphicsScene *scene = new QGraphicsScene;
-        mapInfo = new QGSMapInfo;
+        mapInfo = getMapInfoByName(mapName);
 
-        setScene(scene);
+        if(mapInfo != NULL)
+        {
+            QGraphicsScene *scene = new QGraphicsScene;
 
-        featureFactory = new QGSFeatueFactory(scene);
+            setScene(scene);
 
-        return scene;
+            featureFactory = new QGSFeatueFactory(scene);
+
+            //to complex! maybe variables for bbox and stuff?
+            QString urlBuffer;
+            urlBuffer.append( "http://" );
+            urlBuffer.append( getServerSettings()->getServerHost() );
+            urlBuffer.append( ":" );
+            urlBuffer.append( QString::number(getServerSettings()->getServerPort()) );
+
+            urlBuffer.append( "/geoserver/gwc/service/wms/" );
+            urlBuffer.append( "?LAYERS=" ).append( getMapInfo()->getMapName() );
+            urlBuffer.append( "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&" );
+            urlBuffer.append( "REQUEST=GetMap&STYLES=&EXCEPTIONS=application/vnd.ogc.se_inimage&" );
+            urlBuffer.append( "SRS=EPSG:").append(QString::number(getMapInfo()->getMapSrs())).append("&BBOX=" );
+            urlBuffer.append( getMapInfo()->getBoundingBox().getMinX() ).append( "," );
+            urlBuffer.append( getMapInfo()->getBoundingBox().getMinY() ).append( "," );
+            urlBuffer.append( getMapInfo()->getBoundingBox().getMaxX() ).append( "," );
+            urlBuffer.append( getMapInfo()->getBoundingBox().getMaxY() );
+            urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth()) ).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
+
+            //netManager->blockSignals(false);
+            netManager->get(QNetworkRequest(QUrl(urlBuffer)));
+            //
+
+            return scene;
+        }
     }
     else
     {
@@ -119,7 +150,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
 QGSSettings* QGSMap::getServerSettings()
 {
-    return serverSettings;
+    return this->serverSettings;
 }
 
 bool QGSMap::setServerSettings(QString serverHost, int serverPort)
@@ -139,16 +170,48 @@ bool QGSMap::setServerSettings(QString serverHost, int serverPort)
 }
 
 
-void QGSMap::initMap()
+QGSMapInfo* QGSMap::getMapInfoByName(QString mapName)
 {
-//    mapInfo = NULL;
-//    serverSettings = NULL;
+    QList<QGSMapInfo*> list = getServerSettings()->getMapList(41001);
 
-//    mapInfo = new QGSMapInfo;
-//    serverSettings = new QGSSettings(serverHost, serverPort);
+    for(int i=0;i<list.count();i++)
+    {
+        QGSMapInfo* mi = list.at(i);
 
-//    if(serverSettings->testReply == QGSSettings::Available)
-//        return true;
-//    else
-//        return false;
+        if(mi->getMapName() == mapName)
+        {
+            return mi;
+            break;
+        }
+
+    }
+
+    return NULL;
+}
+
+QGSMapInfo* QGSMap::getMapInfo()
+{
+    return this->mapInfo;
+}
+
+void QGSMap::netReply(QNetworkReply *reply)
+{
+    QByteArray data;
+    QFile pngFile;
+
+    data = reply->readAll();
+
+    pngFile.setFileName("temp.png");
+    pngFile.open(QIODevice::WriteOnly);
+
+    pngFile.write(data);
+
+    pngFile.close();
+
+    QPixmap pix("temp.png");
+
+    scene()->addPixmap(pix);
+
+   // netManager->blockSignals(true);
+
 }

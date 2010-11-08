@@ -43,7 +43,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="srsLabel">
            <property name="text">
             <string>41001</string>
            </property>
@@ -67,6 +67,9 @@
           <widget class="QLabel" name="yMinLbl">
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::AutoText</enum>
            </property>
           </widget>
          </item>
@@ -92,7 +95,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QListWidget" name="listWidget">
+          <widget class="QListWidget" name="resolutionsList">
            <property name="maximumSize">
             <size>
              <width>16777215</width>

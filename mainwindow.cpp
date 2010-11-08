@@ -11,19 +11,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->gsMap->setServerSettings(); //"10.254.53.244"
+    ui->gsMap->setServerSettings("10.254.53.244"); //"10.254.53.244"
 
-    QGraphicsScene *scene = ui->gsMap->loadMap("test");
-
-    if(scene != NULL)
+    if(ui->gsMap->getServerSettings() != NULL)
     {
-
-        QPixmap pix("lol.png");
-        QGSLayer *lyr = ui->gsMap->addLayer(1, "Test");
-
-        ui->gsMap->featureFactory->addPoint(lyr, 10, 10);
-        ui->gsMap->featureFactory->addPoint(lyr, 20, 10);
-        ui->gsMap->featureFactory->addPoint(lyr, 0, 23);
 
         QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(41001);
 
@@ -38,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     }
     else
-        qDebug() << "Map cannot be loaded";
+        qDebug() << "Server unreachable";
 
 }
 
@@ -49,7 +40,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_listWidget_itemSelectionChanged()
 {
-    QGSMapInfo *mi = (QGSMapInfo *)ui->listWidget->currentItem();
+    QGSMapInfo *mi = ui->gsMap->getMapInfoByName(ui->listWidget->currentItem()->text());
 
     ui->mapBox->setTitle(mi->getMapName());
+
+    ui->srsLabel->setText(QString::number(mi->getMapSrs()));
+
+    ui->xMinLbl->setText(mi->getBoundingBox().getMinX());
+    ui->xMaxLbl->setText(mi->getBoundingBox().getMaxX());
+    ui->yMinLbl->setText(mi->getBoundingBox().getMinY());
+    ui->yMaxLbl->setText(mi->getBoundingBox().getMaxY());
+
+    ui->resolutionsList->clear();
+
+    for(int i=0;i<mi->getMapResolutions().count();i++)
+    {
+        ui->resolutionsList->addItem(QString::number(mi->getMapResolutions().at(i)));
+    }
+
+    QGraphicsScene *scene = ui->gsMap->loadMap(mi->getMapName());
+
+    if(scene != NULL)
+    {
+
+    }
 }

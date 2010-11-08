@@ -3,22 +3,28 @@
 
 #include <QObject>
 
-class QGSRect : public QObject
+class QGSRect
 {
-    Q_OBJECT
 public:
-     QGSRect() {xMin = xMax = yMin = yMax = 0;}
-     QGSRect(double xMin, double yMin, double xMax, double yMax);
+    explicit QGSRect();
+
+    void setRect(QString xMin, QString yMin, QString xMax, QString yMax);
+    QString getMinX();
+    QString getMaxX();
+    QString getMinY();
+    QString getMaxY();
+
 
 signals:
 
 public slots:
 
 private:
-    double xMin;
-    double yMin;
-    double xMax;
-    double yMax;
+
+    QString xMin;
+    QString yMin;
+    QString xMax;
+    QString yMax;
 
 };
 

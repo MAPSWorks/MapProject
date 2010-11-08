@@ -123,64 +123,75 @@ void QGSSettings::connectsAndSettings()
 
 }
 
-QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType)
+QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType, bool reload)
 {
-    mapList.clear();
-
-
-    QString capableUrl = "http://";
-    capableUrl.append(this->serverHost);
-    capableUrl.append(":");
-    capableUrl.append(QString::number(this->serverPort));
-    capableUrl.append("/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true");
-
-    netManager->get(QNetworkRequest(QUrl(capableUrl)));
-
-    eventLoop.exec();
-
-    xmlFile.open(QIODevice::ReadOnly);
-
-    xmlParser.setContent(&xmlFile);
-
-    QDomElement xmlRoot = xmlParser.documentElement();
-
-    QDomNode node;
-
-    node = xmlRoot.childNodes().at(1).childNodes().at(2).firstChild();
-
-    while(!node.isNull())
+    if(reload || mapList.count() == 0)
     {
-        if(node.nodeName() == "TileSet")
+        mapList.clear();
+
+
+        QString capableUrl = "http://";
+        capableUrl.append(this->serverHost);
+        capableUrl.append(":");
+        capableUrl.append(QString::number(this->serverPort));
+        capableUrl.append("/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true");
+
+        netManager->get(QNetworkRequest(QUrl(capableUrl)));
+
+        eventLoop.exec();
+
+        xmlFile.open(QIODevice::ReadOnly);
+
+        xmlParser.setContent(&xmlFile);
+
+        QDomElement xmlRoot = xmlParser.documentElement();
+
+        QDomNode node;
+
+        node = xmlRoot.childNodes().at(1).childNodes().at(2).firstChild();
+
+        while(!node.isNull())
         {
-            QDomNode tileSet = node.childNodes().at(0);
-
-            if(tileSet.firstChild().nodeValue() == "EPSG:" + QString::number(EPSG))
+            if(node.nodeName() == "TileSet")
             {
-                QString value = node.childNodes().at(6).firstChild().nodeValue();
+                QDomNode tileSet = node.childNodes().at(0);
 
-                if(value.split(":").count() == 1 && node.childNodes().at(5).firstChild().nodeValue() == imageType)
+                if(tileSet.firstChild().nodeValue() == "EPSG:" + QString::number(EPSG))
                 {
-                    QGSMapInfo *mi = new QGSMapInfo;
-                    double xMin = node.childNodes().at(1).toElement().attribute("minx").toDouble();
-                    double yMin = node.childNodes().at(1).toElement().attribute("miny").toDouble();
-                    double xMax = node.childNodes().at(1).toElement().attribute("maxx").toDouble();
-                    double yMax = node.childNodes().at(1).toElement().attribute("maxy").toDouble();
+                    QString value = node.childNodes().at(6).firstChild().nodeValue();
 
-                    mi->setMapName(value);
+                    if(value.split(":").count() == 1 && node.childNodes().at(5).firstChild().nodeValue() == imageType)
+                    {
+                        QGSMapInfo *mi = new QGSMapInfo;
+                        QString xMin = node.childNodes().at(1).toElement().attribute("minx");
+                        QString yMin = node.childNodes().at(1).toElement().attribute("miny");
+                        QString xMax = node.childNodes().at(1).toElement().attribute("maxx");
+                        QString yMax = node.childNodes().at(1).toElement().attribute("maxy");
 
-                    mapList.append(mi);
+                        QString mapResolutions = node.childNodes().at(2).firstChild().nodeValue();
+                        int tileWidth = node.childNodes().at(3).firstChild().nodeValue().toInt();
+                        int tileHeight = node.childNodes().at(4).firstChild().nodeValue().toInt();
+
+                        mi->setMapName(value);
+                        mi->setMapSrs(EPSG);
+                        mi->setBoundingBox(xMin, yMin,xMax, yMax);
+                        mi->setMapResolutions(mapResolutions);
+                        mi->setTileSize(tileWidth, tileHeight);
+
+                        mapList.append(mi);
+                    }
                 }
+
             }
 
+            node = node.nextSibling();
         }
 
-         node = node.nextSibling();
+
+
+
+        xmlFile.close();
     }
-
-
-
-
-    xmlFile.close();
 
     return mapList;
 

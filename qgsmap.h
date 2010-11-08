@@ -22,6 +22,7 @@ public:
 
     //pubclasses
     QGSFeatueFactory *featureFactory;
+    QGSMapInfo *mapInfo;
 
     //layer operations
     QList<QGSLayer*> getLayers();
@@ -42,14 +43,17 @@ public:
     bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
 
+    QGSMapInfo* getMapInfoByName(QString mapName);
+    QGSMapInfo* getMapInfo();
+
 signals:
 
 public slots:
 
 private:
     bool mapLoaded;
-    QGSMapInfo *mapInfo;
     QGSSettings *serverSettings;
+    QNetworkAccessManager *netManager;
 
     QList<QGSLayer*> layers;
 
@@ -57,6 +61,7 @@ private:
 
 
 private slots:
+    void netReply(QNetworkReply* reply);
 
 protected:
 
