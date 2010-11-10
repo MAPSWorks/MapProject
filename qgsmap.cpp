@@ -2,6 +2,7 @@
 
 #include <QGLWidget>
 #include <QtDebug>
+#include <QApplication>
 
 QGSMap::QGSMap(QWidget *parent) :
     QGraphicsView(parent)
@@ -105,7 +106,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 {
     if(serverSettings != NULL)
     {
-        mapInfo = getMapInfoByName(mapName);
+        setMapInfo(getServerSettings()->getMapInfo(mapName));
 
         if(mapInfo != NULL)
         {
@@ -170,23 +171,9 @@ bool QGSMap::setServerSettings(QString serverHost, int serverPort)
 }
 
 
-QGSMapInfo* QGSMap::getMapInfoByName(QString mapName)
+void QGSMap::setMapInfo(QGSMapInfo *mapInfo)
 {
-    QList<QGSMapInfo*> list = getServerSettings()->getMapList(41001);
-
-    for(int i=0;i<list.count();i++)
-    {
-        QGSMapInfo* mi = list.at(i);
-
-        if(mi->getMapName() == mapName)
-        {
-            return mi;
-            break;
-        }
-
-    }
-
-    return NULL;
+    this->mapInfo = mapInfo;
 }
 
 QGSMapInfo* QGSMap::getMapInfo()
@@ -211,6 +198,7 @@ void QGSMap::netReply(QNetworkReply *reply)
     QPixmap pix("temp.png");
 
     scene()->addPixmap(pix);
+
 
    // netManager->blockSignals(true);
 

@@ -197,3 +197,24 @@ QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType, bool rel
 
 
 }
+
+QGSMapInfo* QGSSettings::getMapInfo(QString mapName)
+{
+    if(!mapList.isEmpty())
+    {
+
+        for(int i=0;i<mapList.count();i++)
+        {
+            QGSMapInfo* mi = mapList.at(i);
+
+            if(mi->getMapName() == mapName)
+            {
+                return mi;
+                break;
+            }
+
+        }
+    }
+
+    return NULL;
+}

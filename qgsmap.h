@@ -36,15 +36,13 @@ public:
     bool deleteLayer(int layerId);
 
     //map operations
-
+    QGSMapInfo* getMapInfo();
     QGraphicsScene* loadMap(QString mapName = "");
 
     //server settings
     bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
 
-    QGSMapInfo* getMapInfoByName(QString mapName);
-    QGSMapInfo* getMapInfo();
 
 signals:
 
@@ -58,6 +56,7 @@ private:
     QList<QGSLayer*> layers;
 
     void initMap();
+    void setMapInfo(QGSMapInfo *mapInfo);
 
 
 private slots:

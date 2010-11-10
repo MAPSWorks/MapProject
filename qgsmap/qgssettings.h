@@ -40,6 +40,7 @@ public:
     ConnectionState getConnectionState();
 
     QList<QGSMapInfo*> getMapList(int EPSG = 41001, QString imageType = "image/png", bool reload=false);
+    QGSMapInfo* getMapInfo(QString mapName);
 
 signals:
 
