@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->gsMap->setServerSettings("10.254.53.244"); //"10.254.53.244"
+    ui->gsMap->setServerSettings(); //"10.254.53.244"
 
     if(ui->gsMap->getServerSettings() != NULL)
     {
