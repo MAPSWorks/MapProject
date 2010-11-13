@@ -140,6 +140,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             return scene;
         }
+        return NULL;
     }
     else
     {
