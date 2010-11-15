@@ -11,12 +11,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->gsMap->setServerSettings(); //"10.254.53.244"
+    ui->gsMap->setServerSettings("10.254.53.244"); //"10.254.53.244"
 
     if(ui->gsMap->getServerSettings() != NULL)
     {
 
-        QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(41001);
+        QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(41001);//4326
 
         for(int i=0;i<list.count();i++)
         {
