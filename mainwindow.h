@@ -19,9 +19,6 @@ private:
     Ui::MainWindow *ui;
 
 private slots:
-
-
-private slots:
     void on_listWidget_itemSelectionChanged();
 };
 

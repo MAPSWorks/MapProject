@@ -25,6 +25,7 @@ QGSMap::QGSMap(QWidget *parent) :
    //netManager->blockSignals(true);
    connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
+
 }
 
 QList<QGSLayer*> QGSMap::getLayers()
@@ -107,6 +108,8 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
     if(serverSettings != NULL)
     {
         setMapInfo(getServerSettings()->getMapInfo(mapName));
+        setCurrentResolution(0);
+
 
         if(mapInfo != NULL)
         {
@@ -116,27 +119,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             featureFactory = new QGSFeatueFactory(scene);
 
-            //to complex! maybe variables for bbox and stuff?
-            QString urlBuffer;
-            urlBuffer.append( "http://" );
-            urlBuffer.append( getServerSettings()->getServerHost() );
-            urlBuffer.append( ":" );
-            urlBuffer.append( QString::number(getServerSettings()->getServerPort()) );
-
-            urlBuffer.append( "/geoserver/gwc/service/wms/" );
-            urlBuffer.append( "?LAYERS=" ).append( getMapInfo()->getMapName() );
-            urlBuffer.append( "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&" );
-            urlBuffer.append( "REQUEST=GetMap&STYLES=&EXCEPTIONS=application/vnd.ogc.se_inimage&" );
-            urlBuffer.append( "SRS=EPSG:").append(QString::number(getMapInfo()->getMapSrs())).append("&BBOX=" );
-            urlBuffer.append( getMapInfo()->getBoundingBox().getMinX() ).append( "," );
-            urlBuffer.append( getMapInfo()->getBoundingBox().getMinY() ).append( "," );
-            urlBuffer.append( getMapInfo()->getBoundingBox().getMaxX() ).append( "," );
-            urlBuffer.append( getMapInfo()->getBoundingBox().getMaxY() );
-            urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth()) ).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
-
-            //netManager->blockSignals(false);
-            netManager->get(QNetworkRequest(QUrl(urlBuffer)));
-            //
+            paintMap();
 
             return scene;
         }
@@ -203,4 +186,60 @@ void QGSMap::netReply(QNetworkReply *reply)
 
    // netManager->blockSignals(true);
 
+}
+
+void QGSMap::paintMap()
+{
+    //to complex! maybe variables for bbox and stuff?
+    QString urlBuffer;
+    urlBuffer.append( "http://" );
+    urlBuffer.append( getServerSettings()->getServerHost() );
+    urlBuffer.append( ":" );
+    urlBuffer.append( QString::number(getServerSettings()->getServerPort()) );
+
+    urlBuffer.append( "/geoserver/gwc/service/wms/" );
+    urlBuffer.append( "?LAYERS=" ).append( getMapInfo()->getMapName() );
+    urlBuffer.append( "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&" );
+    urlBuffer.append( "REQUEST=GetMap&STYLES=&EXCEPTIONS=application/vnd.ogc.se_inimage&" );
+    urlBuffer.append( "SRS=EPSG:").append(QString::number(getMapInfo()->getMapSrs())).append("&BBOX=" );
+    urlBuffer.append( getMapInfo()->getBoundingBox().getMinX() ).append( "," );
+    urlBuffer.append( getMapInfo()->getBoundingBox().getMinY() ).append( "," );
+    urlBuffer.append( getMapInfo()->getBoundingBox().getMaxX() ).append( "," );
+    urlBuffer.append( getMapInfo()->getBoundingBox().getMaxY() );
+    urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth()) ).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
+
+    //netManager->blockSignals(false);
+    netManager->get(QNetworkRequest(QUrl(urlBuffer)));
+    //
+}
+
+void QGSMap::setCurrentResolution(double resolution)
+{
+    this->currentResolution = resolution;
+}
+
+void QGSMap::setCurrentResolution(int index)
+{
+//    if(getMapInfo()->getMapResolutions().at(index))
+    this->currentResolution = getMapInfo()->getMapResolutions().at(index);
+}
+
+double QGSMap::getCurrentResolution()
+{
+    return this->currentResolution;
+}
+
+void QGSMap::wheelEvent(QWheelEvent *event)
+{
+    double d = event->delta();
+    double rf = 1 + d/1024;
+    double cr = getCurrentResolution();
+
+    cr = cr + d/8;
+
+    scale( rf, rf );
+
+    qDebug() << getCurrentResolution() << cr << rf;
+
+    //emit resolutionChanged(event->delta());
 }

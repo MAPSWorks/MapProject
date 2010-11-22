@@ -2,6 +2,8 @@
 #define QGSMAP_H
 
 #include <QGraphicsView>
+#include <QWheelEvent>
+
 #include "qgsmap/qgslayer.h"
 #include "qgsmap/qgsfeatuefactory.h"
 #include "qgsmap/qgsmapinfo.h"
@@ -39,12 +41,18 @@ public:
     QGSMapInfo* getMapInfo();
     QGraphicsScene* loadMap(QString mapName = "");
 
+    void setCurrentResolution(double resolution);
+    void setCurrentResolution(int index = 0);
+
+    double getCurrentResolution();
+
     //server settings
     bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
 
 
 signals:
+    void resolutionChanged(double resolution);
 
 public slots:
 
@@ -52,15 +60,18 @@ private:
     bool mapLoaded;
     QGSSettings *serverSettings;
     QNetworkAccessManager *netManager;
+    double currentResolution;
 
     QList<QGSLayer*> layers;
 
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
+    void wheelEvent(QWheelEvent *event);
 
 
 private slots:
     void netReply(QNetworkReply* reply);
+    void paintMap();
 
 protected:
 
