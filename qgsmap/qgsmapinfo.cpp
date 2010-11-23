@@ -49,7 +49,7 @@ QGSRect QGSMapInfo::getBoundingBox()
 
 void QGSMapInfo::setMapResolutions(QString mapResolutions)
 {
-    QStringList list = mapResolutions.split(" ");
+    QStringList list = mapResolutions.trimmed().split(" ");
 
     for(int i=0;i<list.count();i++)
     {
