@@ -47,19 +47,14 @@ QGSRect QGSMapInfo::getBoundingBox()
     return boundingBox;
 }
 
-void QGSMapInfo::setMapResolutions(QString mapResolutions)
+void QGSMapInfo::setMapResolution(double mapResolution)
 {
-    QStringList list = mapResolutions.trimmed().split(" ");
-
-    for(int i=0;i<list.count();i++)
-    {
-        this->mapResolutions.append(list.at(i).toDouble());
-    }
+    this->mapResolution = mapResolution;
 }
 
-QList<double> QGSMapInfo::getMapResolutions()
+double QGSMapInfo::getMapResolution()
 {
-    return this->mapResolutions;
+    return this->mapResolution;
 }
 
 void QGSMapInfo::setTileWidth(int tileWidth)

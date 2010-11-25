@@ -80,7 +80,7 @@ void QGSSettings::netReply(QNetworkReply *reply)
 
         eventLoop.exit();
     }
-    else if(reply->url() == QUrl(testUrl + "/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true"))
+    else if(reply->url() == QUrl(testUrl + "/geoserver/gwc/service/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=getcapabilities&TILED=true"))
     {
         if(reply->error() != 404)
         {
@@ -123,7 +123,7 @@ void QGSSettings::connectsAndSettings()
 
 }
 
-QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType, bool reload)
+QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, bool reload, int tileWidth, int tileHeight)
 {
     if(reload || mapList.count() == 0)
     {
@@ -134,7 +134,7 @@ QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType, bool rel
         capableUrl.append(this->serverHost);
         capableUrl.append(":");
         capableUrl.append(QString::number(this->serverPort));
-        capableUrl.append("/geoserver/gwc/service/wms?service=WMS&version=1.1.1&request=getcapabilities&tiled=true");
+        capableUrl.append("/geoserver/gwc/service/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=getcapabilities&TILED=true");
 
         netManager->get(QNetworkRequest(QUrl(capableUrl)));
 
@@ -144,50 +144,7 @@ QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, QString imageType, bool rel
 
         xmlParser.setContent(&xmlFile);
 
-        QDomElement xmlRoot = xmlParser.documentElement();
-
-        QDomNode node;
-
-        node = xmlRoot.childNodes().at(1).childNodes().at(2).firstChild();
-
-        while(!node.isNull())
-        {
-            if(node.nodeName() == "TileSet")
-            {
-                QDomNode tileSet = node.childNodes().at(0);
-
-                if(tileSet.firstChild().nodeValue() == "EPSG:" + QString::number(EPSG))
-                {
-                    QString value = node.childNodes().at(6).firstChild().nodeValue();
-
-                    if(value.split(":").count() == 1 && node.childNodes().at(5).firstChild().nodeValue() == imageType)
-                    {
-                        QGSMapInfo *mi = new QGSMapInfo;
-                        QString xMin = node.childNodes().at(1).toElement().attribute("minx");
-                        QString yMin = node.childNodes().at(1).toElement().attribute("miny");
-                        QString xMax = node.childNodes().at(1).toElement().attribute("maxx");
-                        QString yMax = node.childNodes().at(1).toElement().attribute("maxy");
-
-                        QString mapResolutions = node.childNodes().at(2).firstChild().nodeValue();
-                        int tileWidth = node.childNodes().at(3).firstChild().nodeValue().toInt();
-                        int tileHeight = node.childNodes().at(4).firstChild().nodeValue().toInt();
-
-                        mi->setMapName(value);
-                        mi->setMapSrs(EPSG);
-                        mi->setBoundingBox(xMin, yMin,xMax, yMax);
-                        mi->setMapResolutions(mapResolutions);
-                        mi->setTileSize(tileWidth, tileHeight);
-
-                        mapList.append(mi);
-                    }
-                }
-
-            }
-
-            node = node.nextSibling();
-        }
-
-
+        mapList = xmlParser.parseMapList(QString::number(EPSG), tileWidth, tileHeight);
 
 
         xmlFile.close();

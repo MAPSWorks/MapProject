@@ -9,8 +9,10 @@
 #include <QFile>
 
 #include "qgsmapinfo.h"
+#include "qgsxmlparser.h"
 
 class QGSMapInfo;
+class QGSXmlParser;
 
 
 class QGSSettings : public QObject
@@ -39,7 +41,7 @@ public:
     int getServerPort();
     ConnectionState getConnectionState();
 
-    QList<QGSMapInfo*> getMapList(int EPSG = 41001, QString imageType = "image/png", bool reload=false);
+    QList<QGSMapInfo*> getMapList(int EPSG = 41001, bool reload=false, int tileWidth=256, int tileHeight=256);
     QGSMapInfo* getMapInfo(QString mapName);
 
 signals:
@@ -52,7 +54,7 @@ private:
     int serverPort;
     QList<QGSMapInfo*> mapList;
 
-    QDomDocument xmlParser;
+    QGSXmlParser xmlParser;
     QFile xmlFile;
 
 

@@ -22,8 +22,8 @@ public:
     void setBoundingBox(QString xMin, QString yMin, QString xMax, QString yMax);
     QGSRect getBoundingBox();
 
-    void setMapResolutions(QString mapResolutions);
-    QList<double> getMapResolutions();
+    void setMapResolution(double mapResolutions);
+    double getMapResolution();
 
     void setTileWidth(int tileWidth = 256);
     int getTileWidth();
@@ -42,7 +42,7 @@ private:
     QString mapName;
     int mapSrs;
     QGSRect boundingBox;
-    QList<double> mapResolutions;
+    double mapResolution;
     int tileWidth;
     int tileHeight;
 

@@ -42,7 +42,6 @@ public:
     QGraphicsScene* loadMap(QString mapName = "");
 
     void setCurrentResolution(double resolution);
-    void setCurrentResolution(int index = 0);
 
     double getCurrentResolution();
 
@@ -63,6 +62,7 @@ private:
     double currentResolution;
 
     QList<QGSLayer*> layers;
+    QStringList mapFormatsList;
 
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
