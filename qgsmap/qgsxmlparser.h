@@ -13,7 +13,6 @@ public:
 
     QList<QGSMapInfo*> parseMapList(QString SRS, int tileWidth=256, int tileHeight=256);
 
-    QList<QDomNode> getNodesByName(QString nodeName);
 };
 
 #endif // QGSXMLPARSER_H

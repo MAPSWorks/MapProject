@@ -30,8 +30,9 @@ QList<QGSMapInfo*> QGSXmlParser::parseMapList(QString SRS, int tileWidth, int ti
                 break;
             }
         }
+//        QString x = layer.attribute();
 
-        if(layer.attribute("queryable") == "1" && srsExists && mapName.split(":").count() == 1)
+        if(srsExists && mapName.split(":").count() == 1)
         {
             QGSMapInfo *mi = new QGSMapInfo;
 
@@ -72,22 +73,4 @@ QList<QGSMapInfo*> QGSXmlParser::parseMapList(QString SRS, int tileWidth, int ti
 
 
     return mapList;
-}
-
-QList<QDomNode> QGSXmlParser::getNodesByName(QString nodeName)
-{
-    QList<QDomNode> nodesList;
-
-    QDomElement xmlRoot = documentElement();
-
-    xmlRoot.elementsByTagName("Layers");
-
-    QDomNode node = xmlRoot;
-
-    for(int i=0;i<node.childNodes().count();i++)
-    {
-
-    }
-
-    return nodesList;
 }

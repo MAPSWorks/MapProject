@@ -8,11 +8,13 @@
 #include "qgsmap/qgsfeatuefactory.h"
 #include "qgsmap/qgsmapinfo.h"
 #include "qgsmap/qgssettings.h"
+#include "qgsmap/qgsrect.h"
 
 class QGSLayer;
 class QGSFeatueFactory;
 class QGSSettings;
 class QGSMapInfo;
+class QGSRect;
 
 
 class QGSMap : public QGraphicsView
@@ -45,6 +47,11 @@ public:
 
     double getCurrentResolution();
 
+    QPoint mapToScreen(QPointF pt);
+    QPoint mapToScreen(double x, double y);
+    QPointF screenToMap(QPoint pt);
+    QPointF screenToMap(int x, int y);
+
     //server settings
     bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
@@ -52,6 +59,7 @@ public:
 
 signals:
     void resolutionChanged(double resolution);
+    void mouseMoveEvent(QMouseEvent *event);
 
 public slots:
 
@@ -67,6 +75,10 @@ private:
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
     void wheelEvent(QWheelEvent *event);
+    QString getImageFile(QGSRect bbox);
+    QTransform getWorldToScreen();
+    QGSRect getImageBoundingBox(double xMin, double yMax);
+
 
 
 private slots:

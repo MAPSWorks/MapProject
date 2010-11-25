@@ -18,8 +18,11 @@ public:
 private:
     Ui::MainWindow *ui;
 
+
+
 private slots:
     void on_listWidget_itemSelectionChanged();
+    void showCoords(QMouseEvent *event);
 };
 
 #endif // MAINWINDOW_H

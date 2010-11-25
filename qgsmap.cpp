@@ -108,8 +108,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
     if(serverSettings != NULL)
     {
         setMapInfo(getServerSettings()->getMapInfo(mapName));
-        setCurrentResolution(0);
-
+        setCurrentResolution(getMapInfo()->getMapResolution());
 
         if(mapInfo != NULL)
         {
@@ -190,6 +189,32 @@ void QGSMap::netReply(QNetworkReply *reply)
 
 void QGSMap::paintMap()
 {
+
+    int xCount = width() / getMapInfo()->getTileWidth() + 1;
+    int yCount = height() / getMapInfo()->getTileHeight() + 1;
+
+    QGSRect bbox = getMapInfo()->getBoundingBox();
+
+    QPoint p0 = mapToScreen(bbox.getMinX().toDouble(), bbox.getMinY().toDouble());
+
+    int startX =  -p0.x() / getMapInfo()->getTileWidth();
+    int startY = ( p0.y() - height() ) / getMapInfo()->getTileHeight();
+
+    int imgXstart = p0.x() + startX * getMapInfo()->getTileWidth();
+    int imgYstart = p0.y() - startY * getMapInfo()->getTileHeight();
+    //
+//    for ( int y = startY; y <= startY + yCount; y++ )
+//    {
+
+//    }
+
+    QGSRect ibbox = getImageBoundingBox(getMapInfo()->getBoundingBox().getMinX().toDouble(), getMapInfo()->getBoundingBox().getMaxY().toDouble());
+
+    getImageFile(ibbox);
+}
+
+QString QGSMap::getImageFile(QGSRect bbox)
+{
     //to complex! maybe variables for bbox and stuff?
     QString urlBuffer;
     urlBuffer.append( "http://" );
@@ -202,16 +227,20 @@ void QGSMap::paintMap()
     urlBuffer.append( "&FORMAT=").append("image/png").append("&SERVICE=WMS&VERSION=1.1.1&" );
     urlBuffer.append( "REQUEST=GetMap&STYLES=&EXCEPTIONS=application/vnd.ogc.se_inimage&" );
     urlBuffer.append( "SRS=EPSG:").append(QString::number(getMapInfo()->getMapSrs())).append("&BBOX=" );
-    urlBuffer.append( getMapInfo()->getBoundingBox().getMinX() ).append( "," );
-    urlBuffer.append( getMapInfo()->getBoundingBox().getMinY() ).append( "," );
-    urlBuffer.append( getMapInfo()->getBoundingBox().getMaxX() ).append( "," );
-    urlBuffer.append( getMapInfo()->getBoundingBox().getMaxY() );
-    urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth()) ).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
+    urlBuffer.append( bbox.getMinX() ).append( "," );
+    urlBuffer.append( bbox.getMinY() ).append( "," );
+    urlBuffer.append( bbox.getMaxX() ).append( "," );
+    urlBuffer.append( bbox.getMaxY() );
+    urlBuffer.append( "&WIDTH=" ).append( QString::number(width())).append( "&HEIGHT=" ).append( QString::number(height()) );
 
     //netManager->blockSignals(false);
     netManager->get(QNetworkRequest(QUrl(urlBuffer)));
-    //
+
+    return "s";
+
 }
+
+
 
 void QGSMap::setCurrentResolution(double resolution)
 {
@@ -238,4 +267,74 @@ void QGSMap::wheelEvent(QWheelEvent *event)
     //qDebug() << getCurrentResolution() << cr << rf;
 
     //emit resolutionChanged(event->delta());
+}
+
+QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
+{
+    QPoint scrPt = mapToScreen(xMin, yMax);
+
+    int x = scrPt.x();
+    int y = scrPt.y();
+
+    int w = getMapInfo()->getTileWidth();
+    int h = getMapInfo()->getTileHeight();
+
+    QTransform t = getWorldToScreen().inverted();
+
+    double minx = 0;
+    double miny = 0;
+    double maxx = 0;
+    double maxy = 0;
+
+    t.map( (x+2*w), (y+2*h), &maxx, &miny );
+    t.map( (x+w), (y+h), &minx, &maxy );
+
+    QGSRect r;
+    r.setRect(QString().setNum(minx), QString::number(miny), QString::number(maxx), QString::number(maxy));
+    r.clearPlus();
+
+    return r;
+}
+
+QTransform QGSMap::getWorldToScreen()
+{
+    QTransform tr;
+    double scale = 1/getCurrentResolution();
+
+    tr.translate( (double)width()/2, (double)height()/2 );
+    tr.scale(scale, -(scale) );
+
+    QPointF pt = getMapInfo()->getBoundingBox().center();
+
+    tr.translate(-pt.x(), -pt.y());
+
+    return tr;
+}
+
+QPoint QGSMap::mapToScreen(double x, double y)
+{
+    mapToScreen(QPointF(x, y));
+}
+
+QPoint QGSMap::mapToScreen(QPointF pt)
+{
+    QTransform t = getWorldToScreen();
+    QPointF dest = t.map(pt);
+
+    return QPoint((int)dest.x(), (int)dest.y());
+}
+
+QPointF QGSMap::screenToMap(int x, int y)
+{
+    screenToMap(QPoint(x, y));
+}
+
+QPointF QGSMap::screenToMap(QPoint pt)
+{
+    QPointF src = pt;
+    QPointF dest;
+    QTransform t = getWorldToScreen().inverted();
+    dest = t.map(src);
+
+    return dest;
 }

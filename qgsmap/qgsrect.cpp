@@ -1,4 +1,5 @@
 #include "qgsrect.h"
+#include <QRegExp>
 
 QGSRect::QGSRect()
 {
@@ -30,6 +31,22 @@ QString QGSRect::getMinY()
 QString QGSRect::getMaxY()
 {
     return this->yMax;
+}
+
+QPointF QGSRect::center()
+{
+    double x = (xMax.toDouble() - xMin.toDouble())/2;
+    double y = (yMax.toDouble() - yMin.toDouble())/2;
+
+    return QPointF(x, y);
+}
+
+void QGSRect::clearPlus()
+{
+    xMin.remove(QRegExp("[+]."));
+    yMin.remove(QRegExp("[+]."));
+    xMax.remove(QRegExp("[+]."));
+    yMax.remove(QRegExp("[+]."));
 }
 
 

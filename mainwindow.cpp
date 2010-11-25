@@ -11,13 +11,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->gsMap->setServerSettings("localhost", 8080);
-//    ui->gsMap->setServerSettings("10.254.53.244");
+
+//    ui->gsMap->setServerSettings("localhost", 8080);
+    ui->gsMap->setServerSettings("10.254.53.244");
 
     if(ui->gsMap->getServerSettings() != NULL)
     {
 
-        QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(900913);//4326 900913 41001
+        QList<QGSMapInfo*> list = ui->gsMap->getServerSettings()->getMapList(41001);//4326 900913 41001
 
         for(int i=0;i<list.count();i++)
         {
@@ -26,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->listWidget->addItem(item);
         }
 
-
+        connect(ui->gsMap, SIGNAL(mouseMoveEvent(QMouseEvent*)), this, SLOT(showCoords(QMouseEvent*)));
 
     }
     else
@@ -41,6 +42,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_listWidget_itemSelectionChanged()
 {
+    disconnect(this, SLOT(showCoords(QMouseEvent*)));
+
     QGSMapInfo *mi = ui->gsMap->getServerSettings()->getMapInfo(ui->listWidget->currentItem()->text());
 
     ui->mapBox->setTitle(mi->getMapName());
@@ -60,5 +63,18 @@ void MainWindow::on_listWidget_itemSelectionChanged()
     {
 
     }
+
+    connect(ui->gsMap, SIGNAL(mouseMoveEvent(QMouseEvent*)), this, SLOT(showCoords(QMouseEvent*)));
+}
+
+void MainWindow::showCoords(QMouseEvent *event)
+{
+    QPoint pt = event->pos();
+
+    QPointF coord = ui->gsMap->screenToMap(pt);
+
+    ui->xl->setText(QString("x (").append(QString::number(pt.x())).append("):").append(QString::number(coord.x())));
+    ui->yl->setText(QString("y (").append(QString::number(pt.y())).append("):").append(QString::number(coord.y())));
+
 }
 

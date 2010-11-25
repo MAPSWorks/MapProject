@@ -2,6 +2,7 @@
 #define QGSRECT_H
 
 #include <QObject>
+#include <QPointF>
 
 class QGSRect
 {
@@ -13,6 +14,8 @@ public:
     QString getMaxX();
     QString getMinY();
     QString getMaxY();
+    QPointF center();
+    void clearPlus();
 
 
 signals:
