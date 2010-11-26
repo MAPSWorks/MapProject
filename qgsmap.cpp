@@ -307,6 +307,7 @@ QTransform QGSMap::getWorldToScreen()
     QPointF pt = getMapInfo()->getBoundingBox().center();
 
     tr.translate(-pt.x(), -pt.y());
+    tr.toAffine();
 
     return tr;
 }
