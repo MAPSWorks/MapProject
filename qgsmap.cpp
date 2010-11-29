@@ -180,6 +180,7 @@ void QGSMap::netReply(QNetworkReply *reply)
 
     QPixmap pix("temp.png");
 
+
     scene()->addPixmap(pix);
 
 
@@ -211,6 +212,7 @@ void QGSMap::paintMap()
     QGSRect ibbox = getImageBoundingBox(getMapInfo()->getBoundingBox().getMinX().toDouble(), getMapInfo()->getBoundingBox().getMaxY().toDouble());
 
     getImageFile(ibbox);
+
 }
 
 QString QGSMap::getImageFile(QGSRect bbox)
@@ -231,7 +233,7 @@ QString QGSMap::getImageFile(QGSRect bbox)
     urlBuffer.append( bbox.getMinY() ).append( "," );
     urlBuffer.append( bbox.getMaxX() ).append( "," );
     urlBuffer.append( bbox.getMaxY() );
-    urlBuffer.append( "&WIDTH=" ).append( QString::number(width())).append( "&HEIGHT=" ).append( QString::number(height()) );
+    urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
 
     //netManager->blockSignals(false);
     netManager->get(QNetworkRequest(QUrl(urlBuffer)));
@@ -286,8 +288,8 @@ QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
     double maxx = 0;
     double maxy = 0;
 
-    t.map( (x+2*w), (y+2*h), &maxx, &miny );
-    t.map( (x+w), (y+h), &minx, &maxy );
+    t.map( (x+w), (y+h), &maxx, &miny );
+    t.map( x, y, &minx, &maxy);
 
     QGSRect r;
     r.setRect(QString().setNum(minx), QString::number(miny), QString::number(maxx), QString::number(maxy));
@@ -299,15 +301,13 @@ QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 1/getCurrentResolution();
+    double scale = 2* 1/getCurrentResolution();
 
-    tr.translate( (double)width()/2, (double)height()/2 );
-    tr.scale(scale, -(scale) );
+    tr.translate(0, 0);
+    tr.scale(scale, -(scale));
 
-    QPointF pt = getMapInfo()->getBoundingBox().center();
-
-    tr.translate(-pt.x(), -pt.y());
-    tr.toAffine();
+    if(getMapInfo() != NULL)
+        tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
 
     return tr;
 }
