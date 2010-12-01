@@ -168,17 +168,20 @@ void QGSMap::netReply(QNetworkReply *reply)
 {
     QByteArray data;
     QFile pngFile;
+    int r = rand();
 
     data = reply->readAll();
 
-    pngFile.setFileName("temp.png");
+
+    pngFile.setFileName("cache/"+QString::number(r)+"temp.png");
     pngFile.open(QIODevice::WriteOnly);
 
     pngFile.write(data);
 
     pngFile.close();
 
-    QPixmap pix("temp.png");
+
+    QPixmap pix("cache/"+QString::number(r)+"temp.png");
 
 
     scene()->addPixmap(pix);
@@ -190,32 +193,33 @@ void QGSMap::netReply(QNetworkReply *reply)
 
 void QGSMap::paintMap()
 {
+    QList<QGSRect> tileList;
 
-    int xCount = width() / getMapInfo()->getTileWidth() + 1;
-    int yCount = height() / getMapInfo()->getTileHeight() + 1;
+    int t = -256;
 
-    QGSRect bbox = getMapInfo()->getBoundingBox();
+    while(t <= 256)
+    {
+        QGSRect ibb0 = getImageBoundingBox(-256, t);
+        QGSRect ibb1 = getImageBoundingBox(0, t);
+        QGSRect ibb2 = getImageBoundingBox(256, t);
 
-    QPoint p0 = mapToScreen(bbox.getMinX().toDouble(), bbox.getMinY().toDouble());
+        ibb0.clearPlus();
+        ibb1.clearPlus();
+        ibb2.clearPlus();
 
-    int startX =  -p0.x() / getMapInfo()->getTileWidth();
-    int startY = ( p0.y() - height() ) / getMapInfo()->getTileHeight();
+        tileList << ibb0 << ibb1 << ibb2;
 
-    int imgXstart = p0.x() + startX * getMapInfo()->getTileWidth();
-    int imgYstart = p0.y() - startY * getMapInfo()->getTileHeight();
-    //
-//    for ( int y = startY; y <= startY + yCount; y++ )
-//    {
+        t = t + 256;
+    }
 
-//    }
+    for(int i=0;i<tileList.count();i++)
+        getImageFile(tileList.at(i));
 
-    QGSRect ibbox = getImageBoundingBox(getMapInfo()->getBoundingBox().getMinX().toDouble(), getMapInfo()->getBoundingBox().getMaxY().toDouble());
 
-    getImageFile(ibbox);
 
 }
 
-QString QGSMap::getImageFile(QGSRect bbox)
+QString QGSMap::getImageFile(int xMin, int yMax)
 {
     //to complex! maybe variables for bbox and stuff?
     QString urlBuffer;
@@ -233,7 +237,7 @@ QString QGSMap::getImageFile(QGSRect bbox)
     urlBuffer.append( bbox.getMinY() ).append( "," );
     urlBuffer.append( bbox.getMaxX() ).append( "," );
     urlBuffer.append( bbox.getMaxY() );
-    urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
+   // urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
 
     //netManager->blockSignals(false);
     netManager->get(QNetworkRequest(QUrl(urlBuffer)));
@@ -270,13 +274,15 @@ void QGSMap::wheelEvent(QWheelEvent *event)
 
     //emit resolutionChanged(event->delta());
 }
-
-QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
+QGSRect QGSMap::getImageBoundingBox(QPoint pt)
 {
-    QPoint scrPt = mapToScreen(xMin, yMax);
+    return getImageBoundingBox(pt.x(), pt.y());
+}
 
-    int x = scrPt.x();
-    int y = scrPt.y();
+QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
+{
+    int x = xMin;
+    int y = yMax;
 
     int w = getMapInfo()->getTileWidth();
     int h = getMapInfo()->getTileHeight();
@@ -293,7 +299,7 @@ QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
 
     QGSRect r;
     r.setRect(QString().setNum(minx), QString::number(miny), QString::number(maxx), QString::number(maxy));
-    r.clearPlus();
+
 
     return r;
 }
@@ -301,20 +307,22 @@ QGSRect QGSMap::getImageBoundingBox(double xMin, double yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 2* 1/getCurrentResolution();
+    double scale = 2*1/getCurrentResolution();
 
     tr.translate(0, 0);
     tr.scale(scale, -(scale));
 
     if(getMapInfo() != NULL)
+    {
         tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
+    }
 
     return tr;
 }
 
 QPoint QGSMap::mapToScreen(double x, double y)
 {
-    mapToScreen(QPointF(x, y));
+    return mapToScreen(QPointF(x, y));
 }
 
 QPoint QGSMap::mapToScreen(QPointF pt)
@@ -327,7 +335,7 @@ QPoint QGSMap::mapToScreen(QPointF pt)
 
 QPointF QGSMap::screenToMap(int x, int y)
 {
-    screenToMap(QPoint(x, y));
+    return screenToMap(QPoint(x, y));
 }
 
 QPointF QGSMap::screenToMap(QPoint pt)

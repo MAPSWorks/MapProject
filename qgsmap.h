@@ -77,7 +77,8 @@ private:
     void wheelEvent(QWheelEvent *event);
     QString getImageFile(QGSRect bbox);
     QTransform getWorldToScreen();
-    QGSRect getImageBoundingBox(double xMin, double yMax);
+    QGSRect getImageBoundingBox(int xMin, int yMax);
+    QGSRect getImageBoundingBox(QPoint pt);
 
 
 
