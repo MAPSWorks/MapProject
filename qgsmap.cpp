@@ -193,7 +193,7 @@ void QGSMap::netReply(QNetworkReply *reply)
 
 void QGSMap::paintMap()
 {
-    for(int t=-256;t <= 256;t=t+256)
+    for(int t=-256*2;t <= 256*2;t=t+256)
     {
         getImageFile(-256, t);
         getImageFile(0, t);
@@ -292,7 +292,7 @@ QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 2*1/getCurrentResolution();
+    double scale = 1/getCurrentResolution();
 
     tr.translate(0, 0);
     tr.scale(scale, -(scale));
