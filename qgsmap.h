@@ -75,7 +75,7 @@ private:
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
     void wheelEvent(QWheelEvent *event);
-    QString getImageFile(QGSRect bbox);
+    QString getImageFile(int xMin, int yMax);
     QTransform getWorldToScreen();
     QGSRect getImageBoundingBox(int xMin, int yMax);
     QGSRect getImageBoundingBox(QPoint pt);

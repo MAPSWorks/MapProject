@@ -193,34 +193,19 @@ void QGSMap::netReply(QNetworkReply *reply)
 
 void QGSMap::paintMap()
 {
-    QList<QGSRect> tileList;
-
-    int t = -256;
-
-    while(t <= 256)
+    for(int t=-256;t <= 256;t=t+256)
     {
-        QGSRect ibb0 = getImageBoundingBox(-256, t);
-        QGSRect ibb1 = getImageBoundingBox(0, t);
-        QGSRect ibb2 = getImageBoundingBox(256, t);
-
-        ibb0.clearPlus();
-        ibb1.clearPlus();
-        ibb2.clearPlus();
-
-        tileList << ibb0 << ibb1 << ibb2;
-
-        t = t + 256;
+        getImageFile(-256, t);
+        getImageFile(0, t);
+        getImageFile(256, t);
     }
-
-    for(int i=0;i<tileList.count();i++)
-        getImageFile(tileList.at(i));
-
-
-
 }
 
 QString QGSMap::getImageFile(int xMin, int yMax)
 {
+    QGSRect bbox = getImageBoundingBox(xMin, yMax);
+    bbox.clearPlus();
+
     //to complex! maybe variables for bbox and stuff?
     QString urlBuffer;
     urlBuffer.append( "http://" );
