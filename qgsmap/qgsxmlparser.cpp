@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <QStringList>
+#include <qmath.h>
 
 QGSXmlParser::QGSXmlParser()
 {
@@ -58,7 +59,7 @@ QList<QGSMapInfo*> QGSXmlParser::parseMapList(QString SRS, int tileWidth, int ti
                 }
             }
 
-            double mapResolution = (xMax.toDouble() - xMin.toDouble()) / (double)tileWidth;
+            double mapResolution = fabs(fabs(xMax.toDouble()) - fabs(xMin.toDouble())) / (double)tileWidth;
 
             mi->setMapName(mapName);
             mi->setMapSrs(SRS.toInt());

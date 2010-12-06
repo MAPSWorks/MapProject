@@ -3,6 +3,7 @@
 #include <QGLWidget>
 #include <QtDebug>
 #include <QApplication>
+#include <QDir>
 
 QGSMap::QGSMap(QWidget *parent) :
     QGraphicsView(parent)
@@ -168,9 +169,15 @@ void QGSMap::netReply(QNetworkReply *reply)
 {
     QByteArray data;
     QFile pngFile;
+    QDir cacheDir = QDir(".");
+
     int r = rand();
 
     data = reply->readAll();
+
+    if(!cacheDir.exists("cache"))
+        cacheDir.mkdir("cache");
+
 
 
     pngFile.setFileName("cache/"+QString::number(r)+"temp.png");
@@ -292,7 +299,7 @@ QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 1/getCurrentResolution();
+    double scale = 1/(getCurrentResolution()+2);
 
     tr.translate(0, 0);
     tr.scale(scale, -(scale));
