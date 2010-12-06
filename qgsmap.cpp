@@ -175,12 +175,26 @@ void QGSMap::netReply(QNetworkReply *reply)
 
     data = reply->readAll();
 
+    //
+
+
     if(!cacheDir.exists("cache"))
         cacheDir.mkdir("cache");
 
+    cacheDir = QDir("cache");
+
+    if(!cacheDir.exists(QString::number(getMapInfo()->getMapSrs())))
+        cacheDir.mkdir(QString::number(getMapInfo()->getMapSrs()));
+
+    cacheDir = QDir("cache/"+QString::number(getMapInfo()->getMapSrs()));
+
+    if(!cacheDir.exists(getMapInfo()->getMapName()))
+        cacheDir.mkdir(getMapInfo()->getMapName());
 
 
-    pngFile.setFileName("cache/"+QString::number(r)+"temp.png");
+
+    QString pth = cacheDir.path();
+    pngFile.setFileName(cacheDir.path()+"/"+getMapInfo()->getMapName()+"/"+QString::number(r)+"temp.png");
     pngFile.open(QIODevice::WriteOnly);
 
     pngFile.write(data);
@@ -188,7 +202,7 @@ void QGSMap::netReply(QNetworkReply *reply)
     pngFile.close();
 
 
-    QPixmap pix("cache/"+QString::number(r)+"temp.png");
+    QPixmap pix(cacheDir.path()+"/"+getMapInfo()->getMapName()+"/"+QString::number(r)+"temp.png");
 
 
     scene()->addPixmap(pix);
@@ -299,7 +313,7 @@ QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 1/(getCurrentResolution()+2);
+    double scale = 1/getCurrentResolution();
 
     tr.translate(0, 0);
     tr.scale(scale, -(scale));
