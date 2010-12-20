@@ -24,7 +24,7 @@ QGSMap::QGSMap(QWidget *parent) :
    setDragMode(QGraphicsView::ScrollHandDrag); //reimplementation inevitable
 
    //netManager->blockSignals(true);
-   connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
+//   connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
 
 }
@@ -182,6 +182,7 @@ void QGSMap::netReply(QNetworkReply *reply)
         cacheDir.mkdir("cache");
 
     cacheDir = QDir("cache");
+    cacheDir.remove("*.*");
 
     if(!cacheDir.exists(QString::number(getMapInfo()->getMapSrs())))
         cacheDir.mkdir(QString::number(getMapInfo()->getMapSrs()));
@@ -246,7 +247,9 @@ QString QGSMap::getImageFile(int xMin, int yMax)
    // urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
 
     //netManager->blockSignals(false);
-    netManager->get(QNetworkRequest(QUrl(urlBuffer)));
+    QGSImageLoader *imageLoader = new QGSImageLoader(urlBuffer, this);
+    connect(imageLoader, SIGNAL(), this, SLOT());
+
 
     return "s";
 

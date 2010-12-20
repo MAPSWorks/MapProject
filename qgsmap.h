@@ -8,6 +8,7 @@
 #include "qgsmap/qgsfeatuefactory.h"
 #include "qgsmap/qgsmapinfo.h"
 #include "qgsmap/qgssettings.h"
+#include "qgsmap/qgsimageloader.h"
 #include "qgsmap/qgsrect.h"
 
 class QGSLayer;
@@ -15,6 +16,7 @@ class QGSFeatueFactory;
 class QGSSettings;
 class QGSMapInfo;
 class QGSRect;
+class QGSImageLoader;
 
 
 class QGSMap : public QGraphicsView
