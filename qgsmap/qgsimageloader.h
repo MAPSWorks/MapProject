@@ -1,26 +1,43 @@
 #ifndef QGSIMAGELOADER_H
 #define QGSIMAGELOADER_H
 
-#include <QNetworkReply>
-#include <QNetworkAccessManager>
-#include <QFile>
 #include <QObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QFile>
 
-#include "qgsmapinfo.h"
-
+#include "../qgsmap.h"
 
 class QGSImageLoader : public QObject
 {
     Q_OBJECT
 public:
-    explicit QGSImageLoader(QString urlString, QObject *parent = 0);
+    explicit QGSImageLoader(QString imageURL = "", QString fileName = "", QObject *parent = 0, bool forceReload = false);
+
+
+    int getLoaderId();
+    QFile getImageFile();
+
+signals:
+    void imageLoaded(QString fileName, int loaderId);
+
+public slots:
+    void saveImage();
 
 private:
+    QFile imageFile;
     QNetworkAccessManager *netManager;
+    int loaderId;
+    bool forceReload;
 
+    void getImage(QString imageName = "");
+    bool setImageFile(QString fileName);
+    void setLoaderId(int loaderId);
 
 private slots:
     void netReply(QNetworkReply* reply);
+
+
 };
 
 #endif // QGSIMAGELOADER_H

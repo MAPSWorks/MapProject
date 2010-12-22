@@ -14,17 +14,13 @@ QGSMap::QGSMap(QWidget *parent) :
 
    //nulls and spells
    serverSettings = NULL;
-   netManager = new QNetworkAccessManager(this);
+
 
    //built-in options
-
    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
    setDragMode(QGraphicsView::ScrollHandDrag); //reimplementation inevitable
-
-   //netManager->blockSignals(true);
-//   connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
 
 }
@@ -116,6 +112,8 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
             QGraphicsScene *scene = new QGraphicsScene;
 
             setScene(scene);
+            setCacheDir(".");
+            setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName());
 
             featureFactory = new QGSFeatueFactory(scene);
 
@@ -165,65 +163,17 @@ QGSMapInfo* QGSMap::getMapInfo()
     return this->mapInfo;
 }
 
-void QGSMap::netReply(QNetworkReply *reply)
-{
-    QByteArray data;
-    QFile pngFile;
-    QDir cacheDir = QDir(".");
-
-    int r = rand();
-
-    data = reply->readAll();
-
-    //
-
-
-    if(!cacheDir.exists("cache"))
-        cacheDir.mkdir("cache");
-
-    cacheDir = QDir("cache");
-    cacheDir.remove("*.*");
-
-    if(!cacheDir.exists(QString::number(getMapInfo()->getMapSrs())))
-        cacheDir.mkdir(QString::number(getMapInfo()->getMapSrs()));
-
-    cacheDir = QDir("cache/"+QString::number(getMapInfo()->getMapSrs()));
-
-    if(!cacheDir.exists(getMapInfo()->getMapName()))
-        cacheDir.mkdir(getMapInfo()->getMapName());
-
-
-
-    QString pth = cacheDir.path();
-    pngFile.setFileName(cacheDir.path()+"/"+getMapInfo()->getMapName()+"/"+QString::number(r)+"temp.png");
-    pngFile.open(QIODevice::WriteOnly);
-
-    pngFile.write(data);
-
-    pngFile.close();
-
-
-    QPixmap pix(cacheDir.path()+"/"+getMapInfo()->getMapName()+"/"+QString::number(r)+"temp.png");
-
-
-    scene()->addPixmap(pix);
-
-
-   // netManager->blockSignals(true);
-
-}
-
 void QGSMap::paintMap()
 {
-    for(int t=-256*2;t <= 256*2;t=t+256)
+    for(int t=-256;t <= 256;t=t+256)
     {
-        getImageFile(-256, t);
-        getImageFile(0, t);
-        getImageFile(256, t);
+        requestImageFile(-256, t, QString::number(t).append("_1"));
+        requestImageFile(0, t, QString::number(t).append("_2"));
+        requestImageFile(256, t, QString::number(t).append("_3"));
     }
 }
 
-QString QGSMap::getImageFile(int xMin, int yMax)
+void QGSMap::requestImageFile(int xMin, int yMax, QString fileName)
 {
     QGSRect bbox = getImageBoundingBox(xMin, yMax);
     bbox.clearPlus();
@@ -246,16 +196,14 @@ QString QGSMap::getImageFile(int xMin, int yMax)
     urlBuffer.append( bbox.getMaxY() );
    // urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
 
-    //netManager->blockSignals(false);
-    QGSImageLoader *imageLoader = new QGSImageLoader(urlBuffer, this);
-    connect(imageLoader, SIGNAL(), this, SLOT());
+
+    QGSImageLoader *iLoader = new QGSImageLoader(urlBuffer, fileName, this);
+    imageLoaders.append(iLoader);
+    connect(iLoader, SIGNAL(imageLoaded(QString,int)), this, SLOT(recieveImageFile(QString,int)));
 
 
-    return "s";
 
 }
-
-
 
 void QGSMap::setCurrentResolution(double resolution)
 {
@@ -266,8 +214,6 @@ double QGSMap::getCurrentResolution()
 {
     return this->currentResolution;
 }
-
-
 
 void QGSMap::wheelEvent(QWheelEvent *event)
 {
@@ -283,6 +229,7 @@ void QGSMap::wheelEvent(QWheelEvent *event)
 
     //emit resolutionChanged(event->delta());
 }
+
 QGSRect QGSMap::getImageBoundingBox(QPoint pt)
 {
     return getImageBoundingBox(pt.x(), pt.y());
@@ -355,4 +302,36 @@ QPointF QGSMap::screenToMap(QPoint pt)
     dest = t.map(src);
 
     return dest;
+}
+
+QDir QGSMap::setCacheDir(QString cachePath)
+{
+    if(!cacheDir.exists(cachePath))
+        cacheDir.mkpath(cachePath);
+
+    cacheDir = QDir(cachePath);
+
+    return cacheDir;
+}
+
+QDir QGSMap::getCacheDir()
+{
+    return cacheDir;
+}
+
+void QGSMap::recieveImageFile(QString fileName, int loaderId)
+{
+    qDebug() << fileName << loaderId;
+
+    for(int i=0;i<imageLoaders.count();i++)
+    {
+        QGSImageLoader *iLoader;
+        if(iLoader->getLoaderId() == loaderId)
+        {
+            imageLoaders.removeAt(i);
+            disconnect(iLoader, SIGNAL(imageLoaded(QString,int)), this, SLOT(recieveImageFile(QString,int)));
+            delete iLoader;
+            break;
+        }
+    }
 }

@@ -1,51 +1,65 @@
 #include "qgsimageloader.h"
-#include <QDir>
 
-#include "../qgsmap.h"
+#include <QtDebug>
 
-QGSImageLoader::QGSImageLoader(QString urlString, QObject *parent):
-        QObject(parent)
+QGSImageLoader::QGSImageLoader(QString imageURL, QString fileName, QObject *parent, bool forceReload) :
+    QObject(parent)
 {
+    netManager = new QNetworkAccessManager(this);
+    this->forceReload = forceReload;
+    setLoaderId(rand());
+    setImageFile(fileName);
+
     connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
-    netManager->get(QNetworkRequest(QUrl(urlString)));
+    netManager->get(QNetworkRequest(QUrl(imageURL)));
+
+
 }
 
 void QGSImageLoader::netReply(QNetworkReply *reply)
 {
     QByteArray data;
-    QFile pngFile;
-    QDir cacheDir = QDir(".");
-    QGSMapInfo *mi = ((QGSMap*)parent())->getMapInfo();
-
-    int r = rand();
 
     data = reply->readAll();
 
-    //
+    if(!imageFile.exists())
+    {
+        imageFile.open(QIODevice::WriteOnly);
+        imageFile.write(data);
+        imageFile.close();
+    }
+    else
+        qDebug() << "loaded";
 
 
-    if(!cacheDir.exists("cache"))
-        cacheDir.mkdir("cache");
+    emit imageLoaded(imageFile.fileName(), getLoaderId());
 
-    cacheDir = QDir("cache");
-    cacheDir.rmpath(".");
+}
 
-    if(!cacheDir.exists(QString::number(mi->getMapSrs())))
-        cacheDir.mkdir(QString::number(mi->getMapSrs()));
+void QGSImageLoader::saveImage()
+{
 
-    cacheDir = QDir("cache/"+QString::number(mi->getMapSrs()));
+}
 
-    if(!cacheDir.exists(mi->getMapName()))
-        cacheDir.mkdir(mi->getMapName());
+void QGSImageLoader::setLoaderId(int loaderId)
+{
+    this->loaderId = loaderId;
+}
 
+int QGSImageLoader::getLoaderId()
+{
+    return this->loaderId;
+}
 
+bool QGSImageLoader::setImageFile(QString fileName)
+{
+    QDir cacheDir;
+    QGSMap *map = (QGSMap*)parent();
+    QString filePath;
 
-//    QString pth = cacheDir.path();
-    pngFile.setFileName(cacheDir.path()+"/"+mi->getMapName()+"/"+QString::number(r)+"temp.png");
-    pngFile.open(QIODevice::WriteOnly);
+    cacheDir = map->getCacheDir();
+    filePath = cacheDir.path()+"/"+fileName + ".png";
+    imageFile.setFileName(filePath);
 
-    pngFile.write(data);
-
-    pngFile.close();
 }
