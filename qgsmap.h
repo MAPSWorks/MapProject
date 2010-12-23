@@ -3,18 +3,21 @@
 
 #include <QGraphicsView>
 #include <QWheelEvent>
+#include <QDir>
 
 #include "qgsmap/qgslayer.h"
 #include "qgsmap/qgsfeatuefactory.h"
 #include "qgsmap/qgsmapinfo.h"
 #include "qgsmap/qgssettings.h"
 #include "qgsmap/qgsrect.h"
+#include "qgsmap/qgsimageloader.h"
 
 class QGSLayer;
 class QGSFeatueFactory;
 class QGSSettings;
 class QGSMapInfo;
 class QGSRect;
+class QGSImageLoader;
 
 
 class QGSMap : public QGraphicsView
@@ -56,6 +59,10 @@ public:
     bool setServerSettings(QString serverHost = "localhost", int serverPort = 18080);
     QGSSettings* getServerSettings();
 
+    //cache dir
+    QDir setCacheDir(QString cachePath);
+    QDir getCacheDir();
+
 
 signals:
     void resolutionChanged(double resolution);
@@ -68,6 +75,8 @@ private:
     QGSSettings *serverSettings;
     QNetworkAccessManager *netManager;
     double currentResolution;
+    QDir cacheDir;
+    QList<QGSImageLoader*> imageLoaders;
 
     QList<QGSLayer*> layers;
     QStringList mapFormatsList;
@@ -75,7 +84,7 @@ private:
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
     void wheelEvent(QWheelEvent *event);
-    QString getImageFile(int xMin, int yMax);
+    void requestImageFile(int xMin, int yMax);
     QTransform getWorldToScreen();
     QGSRect getImageBoundingBox(int xMin, int yMax);
     QGSRect getImageBoundingBox(QPoint pt);
@@ -83,8 +92,8 @@ private:
 
 
 private slots:
-    void netReply(QNetworkReply* reply);
-    void paintMap();
+    void recieveImageFile(QString fileName, int loaderId);
+    void paintMap(bool reloadMap = false);
 
 protected:
 
