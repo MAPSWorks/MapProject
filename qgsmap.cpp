@@ -270,16 +270,19 @@ QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
 QTransform QGSMap::getWorldToScreen()
 {
     QTransform tr;
-    double scale = 1/getCurrentResolution();
-
-    tr.translate(0, 0);
-    tr.scale(scale, -(scale));
 
     if(getMapInfo() != NULL)
     {
-        tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
-    }
+        double scale = 1/getCurrentResolution();
 
+        tr.translate(0, 0);
+        tr.scale(scale, -(scale));
+
+        if(getMapInfo() != NULL)
+        {
+            tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
+        }
+    }
     return tr;
 }
 
@@ -346,6 +349,7 @@ void QGSMap::recieveImageFile(QString fileName, int loaderId)
     ty = QString(list.at(1)).toInt();
 
     imgItem->setPos(tx, ty);
+    imgItem->setParentItem(getMapCanvas());
 
     scene()->addItem(imgItem);
 
@@ -360,4 +364,25 @@ void QGSMap::recieveImageFile(QString fileName, int loaderId)
             break;
         }
     }
+}
+
+QGSLayer* QGSMap::getMapCanvas()
+{
+    return mapCanvas;
+
+}
+
+void QGSMap::setMapCanvas()
+{
+    if(mapCanvas != NULL)
+        clearMapCanvas();
+
+    mapCanvas = new QGSLayer(0x01, "bckgrnd_original");
+
+}
+
+void QGSMap::clearMapCanvas()
+{
+    mapCanvas = NULL;
+    delete mapCanvas;
 }

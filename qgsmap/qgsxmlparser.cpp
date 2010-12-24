@@ -59,7 +59,8 @@ QList<QGSMapInfo*> QGSXmlParser::parseMapList(QString SRS, int tileWidth, int ti
                 }
             }
 
-            double mapResolution = fabs(fabs(xMax.toDouble()) - fabs(xMin.toDouble())) / (double)tileWidth;
+//            double mapResolution = fabs(fabs(xMax.toDouble()) - fabs(xMin.toDouble())) / (double)tileWidth;
+            double mapResolution = 20037508.342789244 * 2.0 / 256.0;
 
             mi->setMapName(mapName);
             mi->setMapSrs(SRS.toInt());

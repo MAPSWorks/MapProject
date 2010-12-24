@@ -77,6 +77,7 @@ private:
     double currentResolution;
     QDir cacheDir;
     QList<QGSImageLoader*> imageLoaders;
+    QGSLayer *mapCanvas;
 
     QList<QGSLayer*> layers;
     QStringList mapFormatsList;
@@ -88,6 +89,10 @@ private:
     QTransform getWorldToScreen();
     QGSRect getImageBoundingBox(int xMin, int yMax);
     QGSRect getImageBoundingBox(QPoint pt);
+
+    void setMapCanvas();
+    void clearMapCanvas();
+    QGSLayer* getMapCanvas();
 
 
 

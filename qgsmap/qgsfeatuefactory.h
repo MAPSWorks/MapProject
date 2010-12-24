@@ -11,12 +11,13 @@ class QGSFeatueFactory
 public:
     QGSFeatueFactory(QGraphicsScene *scene);
 
-    QGraphicsItem* addPoint(QGSLayer *lyr, double X, double Y);
+    QGraphicsItem* addPoint(double X, double Y, QGSLayer *lyr);
 
 
 private:
-    QGraphicsScene *scene;
 
+    QGraphicsScene *scene;
+    QGraphicsScene* getScene();
 
 };
 
