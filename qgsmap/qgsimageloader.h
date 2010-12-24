@@ -31,7 +31,7 @@ private:
     bool forceReload;
 
     void getImage(QString imageName = "");
-    bool setImageFile(QString fileName);
+    void setImageFile(QString fileName);
     void setLoaderId(int loaderId);
 
 private slots:

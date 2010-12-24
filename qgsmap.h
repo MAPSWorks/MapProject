@@ -84,7 +84,7 @@ private:
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
     void wheelEvent(QWheelEvent *event);
-    void requestImageFile(int xMin, int yMax, QString fileName);
+    void requestImageFile(int xMin, int yMax);
     QTransform getWorldToScreen();
     QGSRect getImageBoundingBox(int xMin, int yMax);
     QGSRect getImageBoundingBox(QPoint pt);
@@ -93,7 +93,7 @@ private:
 
 private slots:
     void recieveImageFile(QString fileName, int loaderId);
-    void paintMap();
+    void paintMap(bool reloadMap = false);
 
 protected:
 

@@ -105,17 +105,21 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
     if(serverSettings != NULL)
     {
         setMapInfo(getServerSettings()->getMapInfo(mapName));
-        setCurrentResolution(getMapInfo()->getMapResolution());
+        if(scene() != NULL)
+        {
+            scene()->clear();
+        }
 
-        if(mapInfo != NULL)
+        if(getMapInfo() != NULL)
         {
             QGraphicsScene *scene = new QGraphicsScene;
+            featureFactory = new QGSFeatueFactory(scene);
 
             setScene(scene);
-            setCacheDir(".");
-            setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName());
 
-            featureFactory = new QGSFeatueFactory(scene);
+            setCurrentResolution(getMapInfo()->getMapResolution());
+            setCacheDir(".");
+            setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentResolution()));
 
             paintMap();
 
@@ -163,17 +167,19 @@ QGSMapInfo* QGSMap::getMapInfo()
     return this->mapInfo;
 }
 
-void QGSMap::paintMap()
+void QGSMap::paintMap(bool reloadMap)
 {
+
     for(int t=-256;t <= 256;t=t+256)
     {
-        requestImageFile(-256, t, QString::number(t).append("_1"));
-        requestImageFile(0, t, QString::number(t).append("_2"));
-        requestImageFile(256, t, QString::number(t).append("_3"));
+        requestImageFile(-256, t);
+        requestImageFile(0, t);
+        requestImageFile(256, t);
     }
+
 }
 
-void QGSMap::requestImageFile(int xMin, int yMax, QString fileName)
+void QGSMap::requestImageFile(int xMin, int yMax)
 {
     QGSRect bbox = getImageBoundingBox(xMin, yMax);
     bbox.clearPlus();
@@ -196,6 +202,7 @@ void QGSMap::requestImageFile(int xMin, int yMax, QString fileName)
     urlBuffer.append( bbox.getMaxY() );
    // urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
 
+    QString fileName = QString::number(xMin)+ "_" + QString::number(yMax) + ".png";
 
     QGSImageLoader *iLoader = new QGSImageLoader(urlBuffer, fileName, this);
     imageLoaders.append(iLoader);
@@ -321,7 +328,26 @@ QDir QGSMap::getCacheDir()
 
 void QGSMap::recieveImageFile(QString fileName, int loaderId)
 {
-    qDebug() << fileName << loaderId;
+    QPixmap imagePixmap = QPixmap(fileName);
+    QGraphicsPixmapItem *imgItem = new QGraphicsPixmapItem(imagePixmap);
+
+    QStringList list = fileName.split("/");
+    QString imagePos = list.at(list.count()-1);
+
+    int tx;
+    int ty;
+
+    list = imagePos.split(".");
+    imagePos = list.at(0);
+
+    list = imagePos.split("_");
+
+    tx = QString(list.at(0)).toInt();
+    ty = QString(list.at(1)).toInt();
+
+    imgItem->setPos(tx, ty);
+
+    scene()->addItem(imgItem);
 
     for(int i=0;i<imageLoaders.count();i++)
     {

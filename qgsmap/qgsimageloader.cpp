@@ -29,9 +29,6 @@ void QGSImageLoader::netReply(QNetworkReply *reply)
         imageFile.write(data);
         imageFile.close();
     }
-    else
-        qDebug() << "loaded";
-
 
     emit imageLoaded(imageFile.fileName(), getLoaderId());
 
@@ -52,14 +49,14 @@ int QGSImageLoader::getLoaderId()
     return this->loaderId;
 }
 
-bool QGSImageLoader::setImageFile(QString fileName)
+void QGSImageLoader::setImageFile(QString fileName)
 {
     QDir cacheDir;
     QGSMap *map = (QGSMap*)parent();
     QString filePath;
 
     cacheDir = map->getCacheDir();
-    filePath = cacheDir.path()+"/"+fileName + ".png";
+    filePath = cacheDir.path()+"/"+fileName;
     imageFile.setFileName(filePath);
 
 }
