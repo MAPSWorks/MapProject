@@ -3,8 +3,10 @@
 
 #include <qdom.h>
 #include "qgsmapinfo.h"
+#include "qgscoordinatetransform.h"
 
 class QGSMapInfo;
+class QGSCoordinateTransform;
 
 class QGSXmlParser : public QDomDocument
 {

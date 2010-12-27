@@ -33,6 +33,9 @@ public:
 
     void setTileSize(int tileWidth = 256, int tileHeight = 256);
 
+    int getZoomLevel();
+    void setZoomLevel(int zoomLevel);
+
 
 signals:
 
@@ -43,6 +46,7 @@ private:
     int mapSrs;
     QGSRect boundingBox;
     double mapResolution;
+    int zoomLevel;
     int tileWidth;
     int tileHeight;
 

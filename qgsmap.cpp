@@ -23,6 +23,7 @@ QGSMap::QGSMap(QWidget *parent) :
    setDragMode(QGraphicsView::ScrollHandDrag); //reimplementation inevitable
 
 
+
 }
 
 QList<QGSLayer*> QGSMap::getLayers()
@@ -117,9 +118,9 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             setScene(scene);
 
-            setCurrentResolution(getMapInfo()->getMapResolution());
+            setCurrentZoom(getMapInfo()->getZoomLevel());
             setCacheDir(".");
-            setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentResolution()));
+            setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentZoom()));
 
             paintMap();
 
@@ -140,9 +141,9 @@ QGSSettings* QGSMap::getServerSettings()
     return this->serverSettings;
 }
 
-bool QGSMap::setServerSettings(QString serverHost, int serverPort)
+bool QGSMap::setServerSettings(QString serverHost, int EPSG, int serverPort)
 {
-    serverSettings = new QGSSettings(serverHost, serverPort);
+    serverSettings = new QGSSettings(serverHost, EPSG, serverPort);
 
     if(serverSettings->getConnectionState() == QGSSettings::Available)
     {
@@ -170,18 +171,14 @@ QGSMapInfo* QGSMap::getMapInfo()
 void QGSMap::paintMap(bool reloadMap)
 {
 
-    for(int t=-256;t <= 256;t=t+256)
-    {
-        requestImageFile(-256, t);
-        requestImageFile(0, t);
-        requestImageFile(256, t);
-    }
+    requestImageFile(0, 0);
 
 }
 
 void QGSMap::requestImageFile(int xMin, int yMax)
 {
-    QGSRect bbox = getImageBoundingBox(xMin, yMax);
+
+    QGSRect bbox = getMapInfo()->getBoundingBox();
     bbox.clearPlus();
 
     //to complex! maybe variables for bbox and stuff?
@@ -212,107 +209,17 @@ void QGSMap::requestImageFile(int xMin, int yMax)
 
 }
 
-void QGSMap::setCurrentResolution(double resolution)
+void QGSMap::setCurrentZoom(int zoom)
 {
-    this->currentResolution = resolution;
+    this->currentZoom = zoom;
 }
 
-double QGSMap::getCurrentResolution()
+int QGSMap::getCurrentZoom()
 {
-    return this->currentResolution;
+    return this->currentZoom;
 }
 
-void QGSMap::wheelEvent(QWheelEvent *event)
-{
-//    double d = event->delta();
-//    double rf = 1 + d/1024;
-//    double cr = getCurrentResolution();
 
-//    cr = cr + d/8;
-
-//    scale( rf, rf );
-
-    //qDebug() << getCurrentResolution() << cr << rf;
-
-    //emit resolutionChanged(event->delta());
-}
-
-QGSRect QGSMap::getImageBoundingBox(QPoint pt)
-{
-    return getImageBoundingBox(pt.x(), pt.y());
-}
-
-QGSRect QGSMap::getImageBoundingBox(int xMin, int yMax)
-{
-    int x = xMin;
-    int y = yMax;
-
-    int w = getMapInfo()->getTileWidth();
-    int h = getMapInfo()->getTileHeight();
-
-    QTransform t = getWorldToScreen().inverted();
-
-    double minx = 0;
-    double miny = 0;
-    double maxx = 0;
-    double maxy = 0;
-
-    t.map( (x+w), (y+h), &maxx, &miny );
-    t.map( x, y, &minx, &maxy);
-
-    QGSRect r;
-    r.setRect(QString().setNum(minx), QString::number(miny), QString::number(maxx), QString::number(maxy));
-
-
-    return r;
-}
-
-QTransform QGSMap::getWorldToScreen()
-{
-    QTransform tr;
-
-    if(getMapInfo() != NULL)
-    {
-        double scale = 1/getCurrentResolution();
-
-        tr.translate(0, 0);
-        tr.scale(scale, -(scale));
-
-        if(getMapInfo() != NULL)
-        {
-            tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
-        }
-    }
-    return tr;
-}
-
-QPoint QGSMap::mapToScreen(double x, double y)
-{
-    return mapToScreen(QPointF(x, y));
-}
-
-QPoint QGSMap::mapToScreen(QPointF pt)
-{
-    QTransform t = getWorldToScreen();
-    QPointF dest = t.map(pt);
-
-    return QPoint((int)dest.x(), (int)dest.y());
-}
-
-QPointF QGSMap::screenToMap(int x, int y)
-{
-    return screenToMap(QPoint(x, y));
-}
-
-QPointF QGSMap::screenToMap(QPoint pt)
-{
-    QPointF src = pt;
-    QPointF dest;
-    QTransform t = getWorldToScreen().inverted();
-    dest = t.map(src);
-
-    return dest;
-}
 
 QDir QGSMap::setCacheDir(QString cachePath)
 {
@@ -349,18 +256,18 @@ void QGSMap::recieveImageFile(QString fileName, int loaderId)
     ty = QString(list.at(1)).toInt();
 
     imgItem->setPos(tx, ty);
-    imgItem->setParentItem(getMapCanvas());
+//    imgItem->setParentItem(getMapCanvas());
 
     scene()->addItem(imgItem);
 
     for(int i=0;i<imageLoaders.count();i++)
     {
-        QGSImageLoader *iLoader;
+        QGSImageLoader *iLoader = imageLoaders.at(i);
         if(iLoader->getLoaderId() == loaderId)
         {
             imageLoaders.removeAt(i);
             disconnect(iLoader, SIGNAL(imageLoaded(QString,int)), this, SLOT(recieveImageFile(QString,int)));
-            delete iLoader;
+            //delete iLoader;
             break;
         }
     }

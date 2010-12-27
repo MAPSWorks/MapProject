@@ -5,6 +5,7 @@
 QGSMapInfo::QGSMapInfo() :
     QObject()
 {
+
 }
 
 QString QGSMapInfo::getMapName()
@@ -39,7 +40,7 @@ bool QGSMapInfo::setMapSrs(int mapSrs)
 
 void QGSMapInfo::setBoundingBox(QString xMin, QString yMin, QString xMax, QString yMax)
 {
-    boundingBox.setRect(xMin, yMin,xMax, yMax);
+    boundingBox = QGSRect(xMin, yMin, xMax, yMax);
 }
 
 QGSRect QGSMapInfo::getBoundingBox()
@@ -83,4 +84,13 @@ void QGSMapInfo::setTileSize(int tileWidth, int tileHeight)
     this->tileHeight = tileHeight;
 }
 
+void QGSMapInfo::setZoomLevel(int zoomLevel)
+{
+    this->zoomLevel = zoomLevel;
+}
+
+int QGSMapInfo::getZoomLevel()
+{
+    return this->zoomLevel;
+}
 

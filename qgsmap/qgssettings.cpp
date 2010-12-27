@@ -3,13 +3,14 @@
 #include <QStringList>
 
 
-QGSSettings::QGSSettings(QString serverHost, int serverPort, QObject *parent) :
+QGSSettings::QGSSettings(QString serverHost, int EPSG, int serverPort, QObject *parent) :
     QObject(parent)
 {
     if(setServerHost(serverHost) && setServerPort(serverPort))
     {
         connectsAndSettings();
         testConection();
+        this->EPSG = EPSG;
     }
     else
     {
@@ -123,7 +124,7 @@ void QGSSettings::connectsAndSettings()
 
 }
 
-QList<QGSMapInfo*> QGSSettings::getMapList(int EPSG, bool reload, int tileWidth, int tileHeight)
+QList<QGSMapInfo*> QGSSettings::getMapList(bool reload, int tileWidth, int tileHeight)
 {
     if(reload || mapList.count() == 0)
     {

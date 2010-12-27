@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     qgsmap/qgssettings.cpp \
     qgsmap/qgsrect.cpp \
     qgsmap/qgsxmlparser.cpp \
-    qgsmap/qgsimageloader.cpp
+    qgsmap/qgsimageloader.cpp \
+    qgsmap/qgscoordinatetransform.cpp
 
 HEADERS  += mainwindow.h \
     qgsmap.h \
@@ -30,6 +31,7 @@ HEADERS  += mainwindow.h \
     qgsmap/qgssettings.h \
     qgsmap/qgsrect.h \
     qgsmap/qgsxmlparser.h \
-    qgsmap/qgsimageloader.h
+    qgsmap/qgsimageloader.h \
+    qgsmap/qgscoordinatetransform.h
 
 FORMS    += mainwindow.ui

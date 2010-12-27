@@ -1,18 +1,6 @@
 #include "qgsrect.h"
 #include <QRegExp>
 
-QGSRect::QGSRect()
-{
-}
-
-void QGSRect::setRect(QString xMin, QString yMin, QString xMax, QString yMax)
-{
-    this->xMin = xMin;
-    this->yMin = yMin;
-    this->xMax = xMax;
-    this->yMax = yMax;
-}
-
 QString QGSRect::getMinX()
 {
     return this->xMin;

@@ -26,7 +26,7 @@ public:
         Unknown = 2
     };
 
-    explicit QGSSettings(QString serverHost = "localhost", int serverPort = 18080, QObject *parent = 0);
+    explicit QGSSettings(QString serverHost = "localhost", int EPSG = 900913, int serverPort = 18080, QObject *parent = 0);
 
     //
 
@@ -41,7 +41,7 @@ public:
     int getServerPort();
     ConnectionState getConnectionState();
 
-    QList<QGSMapInfo*> getMapList(int EPSG = 41001, bool reload=false, int tileWidth=256, int tileHeight=256);
+    QList<QGSMapInfo*> getMapList(bool reload=false, int tileWidth=256, int tileHeight=256);
     QGSMapInfo* getMapInfo(QString mapName);
 
 signals:
@@ -52,6 +52,7 @@ public slots:
 private:
     QString serverHost;
     int serverPort;
+    int EPSG;
     QList<QGSMapInfo*> mapList;
 
     QGSXmlParser xmlParser;
