@@ -48,15 +48,15 @@ QGSRect QGSMapInfo::getBoundingBox()
     return boundingBox;
 }
 
-void QGSMapInfo::setMapResolution(double mapResolution)
-{
-    this->mapResolution = mapResolution;
-}
+//void QGSMapInfo::setMapResolution(double mapResolution)
+//{
+//    this->mapResolution = mapResolution;
+//}
 
-double QGSMapInfo::getMapResolution()
-{
-    return this->mapResolution;
-}
+//double QGSMapInfo::getMapResolution()
+//{
+//    return this->mapResolution;
+//}
 
 void QGSMapInfo::setTileWidth(int tileWidth)
 {
@@ -84,13 +84,13 @@ void QGSMapInfo::setTileSize(int tileWidth, int tileHeight)
     this->tileHeight = tileHeight;
 }
 
-void QGSMapInfo::setZoomLevel(int zoomLevel)
-{
-    this->zoomLevel = zoomLevel;
-}
+//void QGSMapInfo::setZoomLevel(int zoomLevel)
+//{
+//    this->zoomLevel = zoomLevel;
+//}
 
-int QGSMapInfo::getZoomLevel()
-{
-    return this->zoomLevel;
-}
+//int QGSMapInfo::getZoomLevel()
+//{
+//    return this->zoomLevel;
+//}
 

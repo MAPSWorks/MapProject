@@ -59,18 +59,10 @@ QList<QGSMapInfo*> QGSXmlParser::parseMapList(QString SRS, int tileWidth, int ti
                 }
             }
 
-            double mapResolution = fabs(xMax.toDouble() - xMin.toDouble()) / (double)tileWidth;
-
-            QGSCoordinateTransform ct(tileWidth);
-
-            int zoomLevel = ct.getZoom(mapResolution);
-
             mi->setMapName(mapName);
             mi->setMapSrs(SRS.toInt());
             mi->setBoundingBox(xMin, yMin,xMax, yMax);
-            mi->setMapResolution(mapResolution);
             mi->setTileSize(tileWidth, tileHeight);
-            mi->setZoomLevel(zoomLevel);
 
             mapList.append(mi);
         }

@@ -7,7 +7,7 @@
 
 double QGSCoordinateTransform::getResolution(int zoom)
 {
-    double res = this->initialResolution / (pow(2, zoom));
+    double res = this->initialResolution / pow(2, zoom);
     return res;
 }
 
@@ -124,4 +124,15 @@ QGSRect QGSCoordinateTransform::getTileBounds(QPoint pt, int zoom)
     maxP = pixelsToMeters( maxx, may, zoom );
 
     return QGSRect(minP.x(), minP.y(), maxP.x(), maxP.y());
+}
+
+QPoint QGSCoordinateTransform::metersToTile(double x, double y, int zoom)
+{
+    return metersToTile(QPoint(x, y), zoom);
+}
+
+QPoint QGSCoordinateTransform::metersToTile(QPointF pt, int zoom)
+{
+    QPoint result = metersToPixels( pt, zoom);
+    return pixelsToTile(result);
 }

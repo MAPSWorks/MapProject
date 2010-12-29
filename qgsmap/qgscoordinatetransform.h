@@ -30,6 +30,9 @@ public:
     QPoint pixelsToTile(QPoint pt);
     QPoint pixelsToTile(int x, int y);
 
+    QPoint metersToTile(QPointF pt, int zoom = 0);
+    QPoint metersToTile(double x, double y, int zoom = 0);
+
     QPointF pixelsToMeters(QPoint pt, int zoom = 0);
     QPointF pixelsToMeters(int x, int y, int zoom = 0);
 

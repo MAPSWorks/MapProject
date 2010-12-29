@@ -22,8 +22,8 @@ public:
     void setBoundingBox(QString xMin, QString yMin, QString xMax, QString yMax);
     QGSRect getBoundingBox();
 
-    void setMapResolution(double mapResolutions);
-    double getMapResolution();
+//    void setMapResolution(double mapResolutions);
+//    double getMapResolution();
 
     void setTileWidth(int tileWidth = 256);
     int getTileWidth();
@@ -33,8 +33,8 @@ public:
 
     void setTileSize(int tileWidth = 256, int tileHeight = 256);
 
-    int getZoomLevel();
-    void setZoomLevel(int zoomLevel);
+//    int getZoomLevel();
+//    void setZoomLevel(int zoomLevel);
 
 
 signals:

@@ -118,7 +118,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             setScene(scene);
 
-            setCurrentZoom(getMapInfo()->getZoomLevel());
+            setCurrentZoom(0);
             setCacheDir(".");
             setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentZoom()));
 
@@ -171,14 +171,19 @@ QGSMapInfo* QGSMap::getMapInfo()
 void QGSMap::paintMap(bool reloadMap)
 {
 
-    requestImageFile(0, 0);
+    //int zoom = getCurrentZoom();
+    requestImageFile(0,0);
+
+
+
 
 }
 
 void QGSMap::requestImageFile(int xMin, int yMax)
 {
+    QGSCoordinateTransform ct;
 
-    QGSRect bbox = getMapInfo()->getBoundingBox();
+    QGSRect bbox = ct.getTileBounds(ct.pixelsToTile(0, 0));
     bbox.clearPlus();
 
     //to complex! maybe variables for bbox and stuff?

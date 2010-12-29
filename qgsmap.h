@@ -31,7 +31,7 @@ public:
 
     //pubclasses
     QGSFeatueFactory *featureFactory;
-    QGSMapInfo *mapInfo;
+
 
     //layer operations
     QList<QGSLayer*> getLayers();
@@ -68,6 +68,7 @@ public slots:
 
 private:
     bool mapLoaded;
+    QGSMapInfo *mapInfo;
     QGSSettings *serverSettings;
     QNetworkAccessManager *netManager;
     int currentZoom;

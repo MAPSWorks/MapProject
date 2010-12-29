@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 
-//    ui->gsMap->setServerSettings("localhost", 4326, 8080); //4326 900913 41001
-    ui->gsMap->setServerSettings("10.254.53.244", 4326);
+//    ui->gsMap->setServerSettings("localhost", 900913, 8080); //4326 900913 41001
+    ui->gsMap->setServerSettings("10.254.53.244", 900913);
 
     if(ui->gsMap->getServerSettings() != NULL)
     {
@@ -54,8 +54,6 @@ void MainWindow::on_listWidget_itemSelectionChanged()
     ui->xMaxLbl->setText(mi->getBoundingBox().getMaxX());
     ui->yMinLbl->setText(mi->getBoundingBox().getMinY());
     ui->yMaxLbl->setText(mi->getBoundingBox().getMaxY());
-    ui->resoLbl->setText(QString::number(mi->getMapResolution()));
-
 
     QGraphicsScene *scene = ui->gsMap->loadMap(mi->getMapName());
 
