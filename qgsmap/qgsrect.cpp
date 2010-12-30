@@ -23,8 +23,8 @@ QString QGSRect::getMaxY()
 
 QPointF QGSRect::center()
 {
-    double x = (xMax.toDouble() - xMin.toDouble())/2;
-    double y = (yMax.toDouble() - yMin.toDouble())/2;
+    double x = xMin.toDouble() + (xMax.toDouble() - xMin.toDouble())/2;
+    double y = yMin.toDouble() + (yMax.toDouble() - yMin.toDouble())/2;
 
     return QPointF(x, y);
 }

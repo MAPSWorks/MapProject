@@ -118,7 +118,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             setScene(scene);
 
-            setCurrentZoom(0);
+            setCurrentZoom(3);
             setCacheDir(".");
             setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentZoom()));
 
@@ -170,20 +170,19 @@ QGSMapInfo* QGSMap::getMapInfo()
 
 void QGSMap::paintMap(bool reloadMap)
 {
+    QGSCoordinateTransform ct;
+    QPoint ptZero = ct.metersToTile(getMapInfo()->getBoundingBox().center(), getCurrentZoom());
 
-    //int zoom = getCurrentZoom();
-    requestImageFile(0,0);
-
-
-
-
+    for(int i=ptZero.x()-4;i<ptZero.x()+4;i++)
+        for(int j=ptZero.y()-4;j<ptZero.y()+4;j++)
+            requestImageFile(i, j);
 }
 
 void QGSMap::requestImageFile(int xMin, int yMax)
 {
     QGSCoordinateTransform ct;
 
-    QGSRect bbox = ct.getTileBounds(ct.pixelsToTile(0, 0));
+    QGSRect bbox = ct.getTileBounds(xMin, yMax, getCurrentZoom());
     bbox.clearPlus();
 
     //to complex! maybe variables for bbox and stuff?
@@ -202,7 +201,7 @@ void QGSMap::requestImageFile(int xMin, int yMax)
     urlBuffer.append( bbox.getMinY() ).append( "," );
     urlBuffer.append( bbox.getMaxX() ).append( "," );
     urlBuffer.append( bbox.getMaxY() );
-   // urlBuffer.append( "&WIDTH=" ).append( QString::number(getMapInfo()->getTileWidth())).append( "&HEIGHT=" ).append( QString::number(getMapInfo()->getTileHeight()) );
+    urlBuffer.append( "&WIDTH=256&HEIGHT=256");
 
     QString fileName = QString::number(xMin)+ "_" + QString::number(yMax) + ".png";
 
