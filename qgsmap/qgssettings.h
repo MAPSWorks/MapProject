@@ -26,7 +26,7 @@ public:
         Unknown = 2
     };
 
-    explicit QGSSettings(QString serverHost = "localhost", int EPSG = 900913, int serverPort = 18080, QObject *parent = 0);
+    explicit QGSSettings(QString serverHost = "localhost", int EPSG = 900913, int serverPort = 8080, QObject *parent = 0);
 
     //
 

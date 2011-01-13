@@ -11,10 +11,11 @@ class QGSCoordinateTransform : public QObject
 {
     Q_OBJECT
 public:
-    explicit QGSCoordinateTransform(int tileSize = 256)
+    explicit QGSCoordinateTransform(int tileWidth = 256, int tileHeight = 256)
     {
-          this->tileSize = tileSize;
-          this->initialResolution = 2 * M_PI * 6378137 / this->tileSize;
+          this->tileWidth = tileWidth;
+          this->tileHeight = tileHeight;
+          this->initialResolution = 2 * M_PI * 6378137 / this->tileWidth;
           this->originShift = 2 * M_PI * 6378137 / 2;
     }
 
@@ -48,7 +49,8 @@ signals:
 public slots:
 
 private:
-    int tileSize;
+    int tileWidth;
+    int tileHeight;
     double originShift;
     double initialResolution;
 

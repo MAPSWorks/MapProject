@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 //    ui->gsMap->setServerSettings("localhost", 900913, 8080); //4326 900913 41001
-    ui->gsMap->setServerSettings("10.254.53.244", 41001);
+    ui->gsMap->setServerSettings("10.254.53.144", 900913, 18080);
 
     if(ui->gsMap->getServerSettings() != NULL)
     {

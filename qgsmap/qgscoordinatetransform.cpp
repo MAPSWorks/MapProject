@@ -99,8 +99,8 @@ QPoint QGSCoordinateTransform::pixelsToTile(QPoint pt)
     int tx = 0;
     int ty = 0;
 
-    tx = int( ceil( pt.x() / tileSize ) - 1 );
-    ty = int( ceil( pt.y() / tileSize ) - 1 );
+    tx = int( ceil( pt.x() / tileWidth ) - 1 );
+    ty = int( ceil( pt.y() / tileHeight ) - 1 );
 
     return QPoint(tx, ty);
 }
@@ -115,10 +115,10 @@ QGSRect QGSCoordinateTransform::getTileBounds(QPoint pt, int zoom)
     QPointF minP;
     QPointF maxP;
 
-    int mix = pt.x()*tileSize;
-    int miy = pt.y()*tileSize;
-    int maxx = (pt.x()+1)*tileSize;
-    int may = (pt.y()+1)*tileSize;
+    int mix = pt.x()*tileWidth;
+    int miy = pt.y()*tileHeight;
+    int maxx = (pt.x()+1)*tileWidth;
+    int may = (pt.y()+1)*tileHeight;
 
     minP = pixelsToMeters( mix, miy, zoom );
     maxP = pixelsToMeters( maxx, may, zoom );
