@@ -58,11 +58,15 @@ public:
     //cache dir
     QDir setCacheDir(QString cachePath);
     QDir getCacheDir();
+    QTransform getWorldToScreen();
 
 
 signals:
     void resolutionChanged(double resolution);
     void mouseMoveEvent(QMouseEvent *event);
+    void tilesToLoad(int numTiles);
+    void tileLoaded();
+
 
 public slots:
 
@@ -83,11 +87,12 @@ private:
     void setMapInfo(QGSMapInfo *mapInfo);
 
     void requestImageFile(int xMin, int yMax);
-    QTransform getWorldToScreen();
 
     void setMapCanvas();
     void clearMapCanvas();
     QGSLayer* getMapCanvas();
+    QGSImageLoader* getLoaderById(int loaderId);
+
 
 
 

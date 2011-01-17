@@ -35,7 +35,7 @@ public:
     void getServerInfo();
 
     bool setServerHost(QString serverHost = "localhost");
-    bool setServerPort(int serverPort = 18080);
+    bool setServerPort(int serverPort = 8080);
 
     QString getServerHost();
     int getServerPort();

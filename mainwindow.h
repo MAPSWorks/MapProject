@@ -15,8 +15,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void setPBar(int numTiles);
+    void stepPBar();
+
 private:
     Ui::MainWindow *ui;
+
 
 
 

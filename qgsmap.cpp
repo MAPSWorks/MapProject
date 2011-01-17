@@ -118,7 +118,7 @@ QGraphicsScene* QGSMap::loadMap(QString mapName)
 
             setScene(scene);
 
-            setCurrentZoom(0);
+            setCurrentZoom(4);
             setCacheDir(".");
             setCacheDir("cache/" + QString::number(getMapInfo()->getMapSrs()) + "/" + getMapInfo()->getMapName() + "/" + QString::number(getCurrentZoom()));
 
@@ -171,11 +171,17 @@ QGSMapInfo* QGSMap::getMapInfo()
 void QGSMap::paintMap(bool reloadMap)
 {
     QGSCoordinateTransform ct;
-//    QPointF ptest = QPointF(3691848.64534, 10610915.90090);
     QPoint ptZero = ct.metersToTile(getMapInfo()->getBoundingBox().center(), getCurrentZoom());
 
-    for(int i=ptZero.x()-2;i<ptZero.x()+2;i++)
-        for(int j=ptZero.y()-2;j<ptZero.y()+2;j++)
+
+    int hTiles = (width() / 256) + 1;
+    int vTiles = (height() / 256) + 1;
+    int numTiles = hTiles * vTiles;
+
+    emit tilesToLoad(numTiles);
+
+    for(int i=ptZero.x()-1;i<(ptZero.x()+hTiles);i++)
+        for(int j=ptZero.y()-1;j<(ptZero.y()+vTiles);j++)
             requestImageFile(i, j);
 }
 
@@ -202,7 +208,7 @@ void QGSMap::requestImageFile(int xMin, int yMax)
     urlBuffer.append( bbox.getMinY() ).append( "," );
     urlBuffer.append( bbox.getMaxX() ).append( "," );
     urlBuffer.append( bbox.getMaxY() );
-    urlBuffer.append( "&WIDTH=").append(getMapInfo()->getTileWidth()).append("&HEIGHT=").append(getMapInfo()->getTileHeight());
+    urlBuffer.append( "&WIDTH=").append(QString::number(getMapInfo()->getTileWidth())).append("&HEIGHT=").append(QString::number(getMapInfo()->getTileHeight()));
 
     QString fileName = QString::number(xMin)+ "_" + QString::number(yMax) + ".png";
 
@@ -210,9 +216,9 @@ void QGSMap::requestImageFile(int xMin, int yMax)
     imageLoaders.append(iLoader);
     connect(iLoader, SIGNAL(imageLoaded(QString,int)), this, SLOT(recieveImageFile(QString,int)));
 
-
-
 }
+
+
 
 void QGSMap::setCurrentZoom(int zoom)
 {
@@ -223,8 +229,6 @@ int QGSMap::getCurrentZoom()
 {
     return this->currentZoom;
 }
-
-
 
 QDir QGSMap::setCacheDir(QString cachePath)
 {
@@ -260,10 +264,12 @@ void QGSMap::recieveImageFile(QString fileName, int loaderId)
     tx = QString(list.at(0)).toInt();
     ty = QString(list.at(1)).toInt();
 
-    imgItem->setPos(tx, ty);
+    imgItem->setPos(tx*256, ty*256);
 //    imgItem->setParentItem(getMapCanvas());
 
     scene()->addItem(imgItem);
+
+    emit tileLoaded();
 
     for(int i=0;i<imageLoaders.count();i++)
     {
@@ -297,4 +303,32 @@ void QGSMap::clearMapCanvas()
 {
     mapCanvas = NULL;
     delete mapCanvas;
+}
+
+QGSImageLoader* QGSMap::getLoaderById(int loaderId)
+{
+    for(int i=0;i<imageLoaders.count();i++)
+    {
+        QGSImageLoader *iLoader = imageLoaders.at(i);
+        if(iLoader->getLoaderId() == loaderId)
+            return iLoader;
+    }
+
+    return NULL;
+}
+
+QTransform QGSMap::getWorldToScreen()
+{
+    QTransform tr;
+    double scale = 1;
+
+    tr.translate(0, 0);
+    tr.scale(scale, -(scale));
+
+    if(getMapInfo() != NULL)
+    {
+        tr.translate(-getMapInfo()->getBoundingBox().getMinX().toDouble(), -getMapInfo()->getBoundingBox().getMaxY().toDouble());
+    }
+
+    return tr;
 }

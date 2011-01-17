@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 
-//    ui->gsMap->setServerSettings("localhost", 900913, 8080); //4326 900913 41001
+//    ui->gsMap->setServerSettings("localhost"); //4326 900913 41001
     ui->gsMap->setServerSettings("10.254.53.144", 900913, 18080);
 
     if(ui->gsMap->getServerSettings() != NULL)
@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
         }
 
         connect(ui->gsMap, SIGNAL(mouseMoveEvent(QMouseEvent*)), this, SLOT(showCoords(QMouseEvent*)));
+        connect(ui->gsMap, SIGNAL(tilesToLoad(int)), this, SLOT(setPBar(int)));
+        connect(ui->gsMap, SIGNAL(tileLoaded()), this, SLOT(stepPBar()));
 
     }
     else
@@ -72,3 +74,14 @@ void MainWindow::showCoords(QMouseEvent *event)
 
 }
 
+void MainWindow::setPBar(int numTiles)
+{
+    ui->pBar1->setValue(0);
+    ui->pBar1->setMaximum(numTiles);
+}
+
+void MainWindow::stepPBar()
+{
+    int v = ui->pBar1->value()+1;
+    ui->pBar1->setValue(v);
+}

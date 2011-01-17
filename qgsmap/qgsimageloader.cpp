@@ -15,6 +15,7 @@ QGSImageLoader::QGSImageLoader(QString imageURL, QString fileName, QObject *pare
     netManager->get(QNetworkRequest(QUrl(imageURL)));
 
 
+
 }
 
 void QGSImageLoader::netReply(QNetworkReply *reply)

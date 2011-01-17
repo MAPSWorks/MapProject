@@ -29,6 +29,7 @@ private:
     QNetworkAccessManager *netManager;
     int loaderId;
     bool forceReload;
+    QEventLoop eventLoop;
 
     void getImage(QString imageName = "");
     void setImageFile(QString fileName);
