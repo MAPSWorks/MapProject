@@ -2,13 +2,13 @@
 
 #include <QtDebug>
 
-QGSImageLoader::QGSImageLoader(QString imageURL, QString fileName, QObject *parent, bool forceReload) :
+QGSImageLoader::QGSImageLoader(QString imageURL, int xTile, int yTile, int xNum, int yNum, QObject *parent, bool forceReload) :
     QObject(parent)
 {
     netManager = new QNetworkAccessManager(this);
     this->forceReload = forceReload;
     setLoaderId(rand());
-    setImageFile(fileName);
+    setTileNum(xTile, yTile, xNum, yNum);
 
     connect(netManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(netReply(QNetworkReply*)));
 
@@ -49,14 +49,46 @@ int QGSImageLoader::getLoaderId()
     return this->loaderId;
 }
 
-void QGSImageLoader::setImageFile(QString fileName)
+void QGSImageLoader::setImageFile()
 {
     QDir cacheDir;
     QGSMap *map = (QGSMap*)parent();
     QString filePath;
+
+    QString fileName = QString::number(xTile)+ "_" + QString::number(yTile) + ".png";
 
     cacheDir = map->getCacheDir();
     filePath = cacheDir.path()+"/"+fileName;
     imageFile.setFileName(filePath);
 
 }
+
+void QGSImageLoader::setTileNum(int xTile, int yTile, int xNum, int yNum)
+{
+    this->xTile = xTile;
+    this->yTile = yTile;
+    this->xNum = xNum;
+    this->yNum = yNum;
+
+    setImageFile();
+}
+
+ int QGSImageLoader::getTileNum(int axis, bool actual)
+ {
+     switch(axis)
+     {
+     case X:
+         if(actual)
+             return this->xTile;
+         else
+             return this->xNum;
+         break;
+     case Y:
+         if(actual)
+             return this->yTile;
+         else
+             return this->yNum;
+         break;
+     }
+     return NULL;
+ }

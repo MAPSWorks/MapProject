@@ -99,8 +99,8 @@ QPoint QGSCoordinateTransform::pixelsToTile(QPoint pt)
     int tx = 0;
     int ty = 0;
 
-    tx = int( ceil( pt.x() / tileWidth ) - 1 );
-    ty = int( ceil( pt.y() / tileHeight ) - 1 );
+    tx = int( ceil( (float)pt.x() / tileWidth ) - 1 );
+    ty = int( ceil( (float)pt.y() / tileHeight ) - 1 );
 
     return QPoint(tx, ty);
 }
@@ -117,6 +117,7 @@ QGSRect QGSCoordinateTransform::getTileBounds(QPoint pt, int zoom)
 
     int mix = pt.x()*tileWidth;
     int miy = pt.y()*tileHeight;
+
     int maxx = (pt.x()+1)*tileWidth;
     int may = (pt.y()+1)*tileHeight;
 
@@ -133,6 +134,30 @@ QPoint QGSCoordinateTransform::metersToTile(double x, double y, int zoom)
 
 QPoint QGSCoordinateTransform::metersToTile(QPointF pt, int zoom)
 {
-    QPoint result = metersToPixels( pt, zoom);
+    QPoint result = metersToPixels(pt, zoom);
+
     return pixelsToTile(result);
+}
+
+QPoint QGSCoordinateTransform::toGoogle(int x, int y, int zoom)
+{
+    return toGoogle(QPoint(x, y), zoom);
+}
+
+QPoint QGSCoordinateTransform::toGoogle(QPoint pt, int zoom)
+{
+    int x = pt.x();
+    int y = (pow(2,zoom) - 1) - pt.y();
+
+    return QPoint(x, y);
+}
+
+void QGSCoordinateTransform::setGoogleTiling()
+{
+    this->googleTile = true;
+}
+
+void QGSCoordinateTransform::setTMSTiling()
+{
+    this->googleTile = false;
 }

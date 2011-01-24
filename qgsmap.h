@@ -26,8 +26,11 @@ class QGSMap : public QGraphicsView
 {
     Q_OBJECT
 
+
 public:
     explicit QGSMap(QWidget *parent = 0);
+
+    enum tileAxis {X , Y};
 
     //pubclasses
     QGSFeatueFactory *featureFactory;
@@ -59,6 +62,8 @@ public:
     QDir setCacheDir(QString cachePath);
     QDir getCacheDir();
 
+    QTransform getWorldToScreen();
+
 
 signals:
     void resolutionChanged(double resolution);
@@ -82,12 +87,12 @@ private:
     void initMap();
     void setMapInfo(QGSMapInfo *mapInfo);
 
-    void requestImageFile(int xMin, int yMax);
-    QTransform getWorldToScreen();
+    void requestImageFile(int xTile, int yTile, int xNum, int yNum);
 
     void setMapCanvas();
     void clearMapCanvas();
     QGSLayer* getMapCanvas();
+    QGSImageLoader* getLoaderById(int loaderId);
 
 
 

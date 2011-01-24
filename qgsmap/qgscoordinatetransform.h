@@ -11,12 +11,13 @@ class QGSCoordinateTransform : public QObject
 {
     Q_OBJECT
 public:
-    explicit QGSCoordinateTransform(int tileWidth = 256, int tileHeight = 256)
+    explicit QGSCoordinateTransform(int tileWidth = 256, int tileHeight = 256, bool googleTiling = true)
     {
           this->tileWidth = tileWidth;
           this->tileHeight = tileHeight;
           this->initialResolution = 2 * M_PI * 6378137 / this->tileWidth;
           this->originShift = 2 * M_PI * 6378137 / 2;
+          this->googleTile = googleTiling;
     }
 
     QPointF latLonToMeters(QPointF pt);
@@ -43,6 +44,13 @@ public:
     QGSRect getTileBounds(int x, int y, int zoom = 0);
     QGSRect getTileBounds(QPoint pt, int zoom = 0);
 
+    void setGoogleTiling();
+    void setTMSTiling();
+
+    QPoint toGoogle(QPoint pt, int zoom = 0);
+    QPoint toGoogle(int x, int y, int zoom = 0);
+
+
 
 signals:
 
@@ -53,6 +61,7 @@ private:
     int tileHeight;
     double originShift;
     double initialResolution;
+    bool googleTile;
 
 };
 
